@@ -32,6 +32,20 @@ Measured on macOS with unchanged debug builds. Space excludes the built main che
 
 Read the [timing results and commands](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919366785), [space results and measurement method](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919213926), or the [full evaluation](docs/evaluation.md).
 
+## Disk lifetime: every unnecessary write adds up
+
+**You can delete a build folder. You cannot undo flash wear.**
+
+A solid-state drive (SSD) has finite write endurance. Its flash memory can withstand a limited number of write-and-erase cycles. Rebuilding unchanged dependencies repeatedly creates avoidable write activity, even when plenty of disk space is free. Drive manufacturers describe endurance in terms of how much data can be written over the drive's life; [Kingston explains the limits and the role of write activity](https://www.kingston.com/unitedkingdom/en/ssd/ssd-faq).
+
+A **30 GB Cargo build folder** makes the stakes easier to see. Create fresh worktrees throughout the day, rebuild the same dependencies, delete the output, and repeat: the free-space counter recovers, but the writes have already happened. The 30 GB example illustrates a larger workload; our benchmarks used smaller projects.
+
+Faster Rust Work Trees shares existing build blocks and reuses compiled dependencies. Each optimized worktree in our tests completed its unchanged first build with **zero crates compiled**. That avoids regenerating the same dependency artifacts and is expected to reduce unnecessary writes as worktrees are created repeatedly. The benefit matters even when the disk has room to spare.
+
+For ten fd worktrees, the measured added allocation fell from **1,613 MB to 12.8 MB**—about **1/126 of the ordinary allocation**. Ten ripgrep worktrees used about **1/59 of the ordinary added allocation**. These are substantial storage savings, with a practical reason to care about the writes avoided along the way.
+
+Those factors measure **allocated space**, not cumulative bytes written or disk lifetime. We have not measured drive write counters, internal flash writes, or endurance changes. The amount of wear avoided depends on the drive and workload; a numerical lifetime extension would require separate measurements.
+
 ## Bring the tool to your repository
 
 Run the shared tool directly from GitHub:
