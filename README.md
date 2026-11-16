@@ -32,19 +32,27 @@ Measured on macOS with unchanged debug builds. Space excludes the built main che
 
 Read the [timing results and commands](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919366785), [space results and measurement method](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919213926), or the [full evaluation](docs/evaluation.md).
 
-## Disk lifetime: every unnecessary write adds up
+## 126×: disk lifetime and the daily cost of rebuilding
+
+**Estimate: 20 pull requests a day, one new worktree per pull request, and 5 GB of additional build output per worktree.**
+
+Applying the measured allocation reduction of approximately 126-fold:
+
+| Daily build allocation | Ordinary worktrees | Optimized worktrees, estimated |
+|---|---:|---:|
+| 20 worktrees × 5 GB | 100 GB | **0.79 GB** |
+
+**That is approximately 99.2 GB of avoided new build allocation every day.** The calculation is `20 × 5 GB − (20 × 5 GB / 126)`. The 5 GB size and 20-worktree day are illustrative inputs; the 126-fold allocation factor comes from the fd benchmark. This estimates allocation across the day's worktree creations, rather than peak occupied space.
 
 **You can delete a build folder. You cannot undo flash wear.**
 
 A solid-state drive (SSD) has finite write endurance. Its flash memory can withstand a limited number of write-and-erase cycles. Rebuilding unchanged dependencies repeatedly creates avoidable write activity, even when plenty of disk space is free. Drive manufacturers describe endurance in terms of how much data can be written over the drive's life; [Kingston explains the limits and the role of write activity](https://www.kingston.com/unitedkingdom/en/ssd/ssd-faq).
 
-A **30 GB Cargo build folder** makes the stakes easier to see. Create fresh worktrees throughout the day, rebuild the same dependencies, delete the output, and repeat: the free-space counter recovers, but the writes have already happened. The 30 GB example illustrates a larger workload; our benchmarks used smaller projects.
+Faster Rust Work Trees shares existing build blocks and reuses compiled dependencies. Each optimized worktree in our tests completed its unchanged first build with **zero crates compiled**. That avoids regenerating the same dependency artifacts and is expected to reduce unnecessary writes as worktrees are created repeatedly. The benefit matters even when the disk has room to spare, and becomes particularly relevant for Cargo build folders reaching tens of gigabytes.
 
-Faster Rust Work Trees shares existing build blocks and reuses compiled dependencies. Each optimized worktree in our tests completed its unchanged first build with **zero crates compiled**. That avoids regenerating the same dependency artifacts and is expected to reduce unnecessary writes as worktrees are created repeatedly. The benefit matters even when the disk has room to spare.
+For ten fd worktrees, the measured added allocation fell from **1,613 MB to 12.8 MB**—about **1/126 of the ordinary allocation**. Ten ripgrep worktrees used about **1/59 of the ordinary added allocation**.
 
-For ten fd worktrees, the measured added allocation fell from **1,613 MB to 12.8 MB**—about **1/126 of the ordinary allocation**. Ten ripgrep worktrees used about **1/59 of the ordinary added allocation**. These are substantial storage savings, with a practical reason to care about the writes avoided along the way.
-
-**An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and repeated worktree operations dominate the drive’s writes, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. This is an assumption-based lifetime estimate; the directly measured result is the allocation reduction.
+**An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and other wear-causing writes are negligible, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. Under that model, the daily example also estimates **99.2 GB of avoided wear-causing writes**. The directly measured result is allocation reduction; the daily write and lifetime figures are assumption-based estimates.
 
 ## Bring the tool to your repository
 
