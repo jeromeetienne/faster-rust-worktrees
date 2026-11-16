@@ -1,1 +1,3 @@
 .agents/worktree/
+node_modules/
+*.tgz

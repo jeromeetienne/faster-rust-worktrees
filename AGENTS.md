@@ -77,7 +77,7 @@ git fetch origin main
 git worktree add -b <branch> .agents/worktree/<branch> origin/main
 ```
 
-- Launch command: not available; this repository has no application code. Configure and verify a real launch command when application code is added. Do not report application review as passed while the launch command is unavailable.
+- Launch command: `pnpm install --frozen-lockfile && pnpm dev --help`, run from the temporary worktree. Run `pnpm test` for the real Cargo integration scenario.
 - Issue tracker commands: use the commands below for `jeromeetienne/faster-rust-worktrees`, replacing angle-bracket values. Write multiline descriptions and comments to files and use `--body-file`.
 
 ```bash

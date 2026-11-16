@@ -2,22 +2,22 @@
 
 ## Purpose
 
-This repository holds installed coding-agent skills and their repository configuration. Application source code has not been added.
+Faster Rust Work Trees is a pnpm monorepo containing a reusable Rust worktree optimization tool and its canonical skill.
 
 ## Key Exports & Entry Points
 
-- [AGENTS.md](AGENTS.md): repository instructions and workflow settings.
-- [.agents/skills/](.agents/skills/): installed reusable skills.
-- [.agents/rules_of_the_repo/](.agents/rules_of_the_repo/): repository rules and configuration.
-- [.claude/skills/](.claude/skills/): Claude Code links to installed skills.
-- [docs/](docs/index.md): repository documentation.
+- `packages/`: pnpm workspace packages; see its CONTEXT.md.
+- `skills/faster_rust_worktrees/`: canonical draft skill and configuration reference.
+- `docs/`: evaluation evidence and repository documentation.
+- `pnpm dev --help`: local executable.
+- `pnpm test`: disposable real Cargo integration verification.
 
 ## Rules
 
-- Repository-specific configuration stays outside installed skill folders.
-- Folder responsibilities follow the [Repo Folders Constraints](.agents/rules_of_the_repo/folder_constraints.md).
-- Application launch and test commands remain unavailable until application source code exists.
+- Receiving repositories configure the tool instead of copying its implementation.
+- Folder responsibilities follow [Repo Folders Constraints](.agents/rules_of_the_repo/config/repo_folders_constraints/config.md).
+- Repository settings stay outside reusable skill folders.
 
 ## Background
 
-The [repository instructions](AGENTS.md) provide the authoritative workflow settings.
+- https://github.com/jeromeetienne/faster-rust-worktrees/issues/3
