@@ -1,0 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+//	WorktreeTools — public package interface
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+export { Configuration, configurationSchema } from './configuration.js';
+export type { RepositoryConfiguration } from './configuration.js';
+export { WorktreeCreate } from './worktree_create.js';
+export { TargetCleanup } from './target_cleanup.js';
+export { DirectoryClone } from './directory_clone.js';
+export { SourceDates } from './source_dates.js';
+export { BuildScriptOutputs } from './build_script_outputs.js';
