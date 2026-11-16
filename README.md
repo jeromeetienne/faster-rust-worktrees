@@ -52,7 +52,7 @@ Faster Rust Work Trees shares existing build blocks and reuses compiled dependen
 
 For ten fd worktrees, the measured added allocation fell from **1,613 MB to 12.8 MB**—about **1/126 of the ordinary allocation**. Ten ripgrep worktrees used about **1/59 of the ordinary added allocation**.
 
-**An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and repeated worktree operations dominate the drive’s writes, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. Under that model, the daily example also estimates **99.2 GB of avoided wear-causing writes**. The directly measured result is allocation reduction; the daily write and lifetime figures are assumption-based estimates.
+**An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and other wear-causing writes are negligible, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. Under that model, the daily example also estimates **99.2 GB of avoided wear-causing writes**. The directly measured result is allocation reduction; the daily write and lifetime figures are assumption-based estimates.
 
 ## Bring the tool to your repository
 
