@@ -1,12 +1,40 @@
 # Faster Rust Work Trees
 
-**Build once. Start the next worktree faster.**
+**Build once. Let your coding agent start the next worktree faster.**
 
 A new Rust worktree usually starts with an empty build folder. Faster Rust Work Trees reuses the build you already have, giving each worktree independent Cargo output while sharing unchanged disk blocks.
 
 **Ten built late-sh release worktrees: 34.98 GB of added space becomes 846 MB.**
 
-A reusable tool does the work. The [faster_rust_worktrees skill](skills/faster_rust_worktrees/SKILL.md) helps your coding agent configure the tool for your repository.
+Use the [faster_rust_worktrees skill](skills/faster_rust_worktrees/SKILL.md) with your coding agent. The skill guides repository setup, verifies build reuse, and integrates Faster Rust Work Trees into the repository’s worktree workflow.
+
+## Use the skill with your coding agent
+
+### 1. Install the skill
+
+From your Rust repository, install the skill using [skills.sh](https://skills.sh/docs):
+
+```bash
+npx skills add jeromeetienne/faster-rust-worktrees --skill faster_rust_worktrees
+```
+
+Select your coding agent when prompted. The skill is installed for the current project, including its referenced files.
+
+### 2. Configure the repository once
+
+With the skill available, ask:
+
+> Use faster_rust_worktrees to configure this Rust repository. Verify that unchanged builds reuse Cargo output and that source changes still build and test correctly. Integrate Faster Rust Work Trees into this repository’s worktree workflow.
+
+The coding agent finds the actual build and test commands, prepares the main checkout’s output, and checks copy-on-write cloning on your file system. Verification includes changed-source behaviour and independent concurrent builds. After verification, the coding agent updates the repository’s worktree instructions for future tasks.
+
+Repository-specific configuration stays in your repository. The shared implementation stays here.
+
+### 3. Request coding tasks as usual
+
+> Fix this issue in a new worktree, using the repository’s configured Faster Rust Work Trees workflow. Run the relevant tests and prepare the changes for review.
+
+The coding agent creates the worktree, reuses existing build output, makes the changes, and runs the tests. You review the result. Changed code still needs compilation; unchanged dependencies are where repeated work can be avoided.
 
 ## The difference, measured
 
@@ -70,95 +98,16 @@ For ten late-sh release worktrees, measured added allocation fell from **34.98 G
 
 **An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and other wear-causing writes are negligible, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. Under that model, the daily example also estimates **99.2 GB of avoided wear-causing writes**. The directly measured result is allocation reduction; the daily write and lifetime figures are assumption-based estimates.
 
-## Bring the tool to your repository
-
-Run the shared tool directly from GitHub:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees --help
-```
-
-No npm publication is needed. For repeatable automation, pin an available Git reference by appending `#<reference>` to the GitHub package name.
-
-Have your coding agent read the [faster_rust_worktrees skill](skills/faster_rust_worktrees/SKILL.md), or copy the skill folder into your agent's skill directory and ask:
-
-> Use faster_rust_worktrees to configure this Rust repository. Find the real build and test commands, verify copy-on-write cloning on this file system, and check that unchanged builds reuse Cargo output while source changes still produce the correct result.
-
-The receiving repository keeps its own configuration. The implementation stays in Faster Rust Work Trees.
-
-### Configure once
-
-Start from the [configuration example](skills/faster_rust_worktrees/references/setup.md#configuration). Set the base reference, worktree location, build folders, and Cargo commands with their actual working directories. An optional installation command supports repositories with additional dependencies.
-
-Ignore the nested worktree folder in Git, commit the configuration, and build the main checkout with the commands your worktrees will use. Stop builds while cloning.
-
-### Create a worktree
-
-From your Rust repository:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees create fix-example
-```
-
-Run your usual build and test commands inside the new worktree. Check the reported clone decisions. Missing build output or unavailable cloning is reported explicitly.
-
-For an ordinary worktree without build reuse:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees create ordinary-example --without-optimization
-```
-
-## What makes reuse work
-
-1. **Independent build folders, shared unchanged blocks.** Copy-on-write cloning gives each worktree its own output. Writing in one worktree leaves the other worktrees independent.
-2. **Exact source dates.** Only identical tracked files receive the original timestamps, preserving nanosecond precision so Cargo can recognize unchanged sources.
-3. **Relocated build-script records.** Recorded checkout paths are updated for the new worktree, with record dates preserved.
-4. **Your repository's commands.** Cargo runs from the configured package directories, with the features and profiles your repository actually uses.
-
-The technique comes from [Heidrun Code](https://github.com/heidrun-org/heidrun_code/tree/main/packages/dev_tools/worktree_tools). Faster Rust Work Trees extracts the reusable mechanism into a pnpm monorepo with a shared TypeScript tool, a portable skill, and real Git and Cargo tests.
-
-## Keep build output under control
-
-Preview old worktree build folders:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees clean --days 14
-```
-
-Preview obsolete Cargo output using the configured build commands:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees prune
-```
-
-Both commands preview paths by default. Add `--apply` to remove the selected output, with builds stopped. Unknown output is retained; failed commands or unrecognized Cargo logs prevent pruning.
-
 ## Current support
 
 - **macOS:** tested with real cloning, Cargo builds, source changes, concurrent worktrees, and cleanup.
-- **Linux:** GNU `cp --reflink=always` support is implemented; live evaluation on a suitable file system is still pending.
-- **Requirements:** Node.js 20.11 or later, Git, Rust, Cargo, Python 3, and a file system supporting copy-on-write cloning.
-- **Skill status: Draft.** Independent-project measurements are available; unattended skill adoption remains unevaluated.
+- **Linux:** cloning support is implemented; live evaluation on a suitable file system is still pending.
+- **Skill status: Draft.** Independent-project measurements are available; unattended skill adoption remains unevaluated. The first setup includes verification in your actual repository.
 
-Keep Cargo output inside each checkout and unset `CARGO_TARGET_DIR`. Generated files outside Cargo output and paths embedded in compiled programs may need repository-specific setup. See [configuration and limits](skills/faster_rust_worktrees/references/setup.md).
+The coding agent follows the skill’s [configuration and limits](skills/faster_rust_worktrees/references/setup.md) to check requirements and handle repository-specific setup.
 
-## Develop Faster Rust Work Trees
+## Direct tool use and development
 
-From this repository, using pnpm 10:
-
-```bash
-pnpm install --frozen-lockfile
-pnpm dev --help
-pnpm check
-pnpm test
-```
-
-Tests create disposable Git and Rust projects and remove the fixtures afterward. No server is started.
-
-```text
-packages/worktree_tools/       shared tool and real Cargo tests
-skills/faster_rust_worktrees/  canonical skill and configuration reference
-docs/                         measurements, raw evidence, and reproduction methods
-```
+For manual installation, configuration, worktree creation, cleanup, implementation details, and development commands, read the [worktree_tools package README](packages/worktree_tools/README.md).
 
 [MIT license](LICENSE) · [Source attribution](NOTICE.md)

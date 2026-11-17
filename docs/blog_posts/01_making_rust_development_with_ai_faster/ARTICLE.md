@@ -7,151 +7,94 @@
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
 - Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
 
-*With AI, each coding task gets its own worktree. Here’s how to create and build those worktrees more than 10 times faster.*
+*With AI, each coding task gets its own worktree. Here’s how to create and build your rust worktrees more than 10 times faster.*
 
 ## Parallel coding agents multiply the same Rust build cost
 
-When I run three coding tasks at once, I give each coding agent a branch and a worktree. One coding agent can fix a bug while another adds a feature and a third updates tests. Each coding agent builds and tests independently. I review the changes before merging.
+I use a separate branch and worktree for each coding task. With three coding agents, a bug fix, a feature, and a test update can all move forward at once. Builds and tests run independently, and I review the changes before merging.
 
-This is the [feature](https://docs.github.com/en/get-started/using-github/github-flow) [branch](https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/) [workflow](https://nvie.com/posts/a-successful-git-branching-model/), extended with Git worktrees so several branches can be checked out at once. Each coding agent can modify files and build an executable without another coding agent changing the files underneath the build.
+This is the [feature](https://docs.github.com/en/get-started/using-github/github-flow) [branch](https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/) [workflow](https://nvie.com/posts/a-successful-git-branching-model/), extended with Git worktrees so several branches can be checked out at once. Separate working directories prevent edits for one task from disrupting a build for another.
 
-The annoying part comes before the coding agent has changed anything. A fresh Rust worktree usually has an empty Cargo build folder. The dependencies are already compiled in the main checkout, but the coding agent has to compile the same dependencies again. And again for the next task.
+The annoying part comes before any code changes. A fresh Rust worktree usually has an empty Cargo build folder, so the dependencies already compiled in the main checkout get compiled again. And again for the next task.
 
-Three parallel coding tasks are enough to make the cost noticeable. For late-sh, scaling the benchmark to three worktrees and their first release builds gives **6 minutes 36 seconds ordinarily, compared with 16 seconds using Faster Rust Work Trees**: approximately **24 times faster**. Additional allocated space falls from **10.5 GB to 254 MB**.
+For [late-sh](https://github.com/mpiorowski/late-sh), a program I contributed to recently, the benchmark scaled to three worktrees gives **6 minutes 36 seconds ordinarily, compared with 16 seconds using Faster Rust Work Trees** for creation and first release builds: approximately **24 times faster**. [Details here](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/README.md).
 
-The benchmark starts with an already-built main checkout and unchanged sources on macOS. The initial build is excluded. These are summed creation and first-build times; I’ll explain the calculation below.
+Additional allocated space for those three worktrees falls from **10.5 GB to 254 MB**, saving about **10.2 GB**, with **41 times less** new allocation. Reusing compiled output can also reduce unnecessary writes and help extend drive lifetime. The lifetime gain depends on actual writes and other drive activity; disk allocation alone doesn’t measure wear.
 
 ## Reuse an existing build while keeping worktrees independent
 
 [Faster Rust Work Trees](https://github.com/jeromeetienne/faster-rust-worktrees) gives each new worktree a copy of the main checkout’s Cargo output using **copy-on-write cloning**.
 
-Each worktree has its own files, but the file system initially stores the unchanged contents in shared disk blocks. When a worktree writes new data, the file system allocates separate blocks for the changes. The other worktrees keep their original contents.
+The file system initially stores unchanged contents in shared disk blocks. Each worktree still has its own files. Writing new data allocates separate blocks for the changes, leaving the other worktrees’ contents untouched.
 
-So a coding agent can replace build output without replacing another coding agent’s build output. Unchanged blocks stay shared.
+That independence matters. A common build folder makes several coding agents write to the same output and potentially wait on each other. With cloned build folders, compilation for one task can replace output without affecting another task.
 
-I want builds to stay independent. Pointing every coding agent at one common build folder means the coding agents write to the same output and can wait on each other. Cloning gives each worktree a separate build folder without making a full physical copy.
+Sharing blocks saves disk space; reusing compiled output saves build time. But Cargo must still recognise the existing build as current.
 
-The shared blocks save disk space. Reusing compiled output saves build time. But cloning alone doesn’t make Cargo accept the existing build.
-
-The mechanism originated in [Heidrun Code](https://github.com/heidrun-org/heidrun_code/tree/main/packages/dev_tools/worktree_tools). Faster Rust Work Trees makes the mechanism available as a reusable tool with repository-specific configuration.
+The mechanism originated in [Heidrun Code](https://github.com/heidrun-org/heidrun_code/tree/main/packages/dev_tools/worktree_tools). Faster Rust Work Trees packages the same approach with a skill that guides your coding agent through repository setup and verification.
 
 ## Why cloning the build folder alone does not work
 
-Copy the build folder, run Cargo, and you can still get recompilation. The files may be identical, but their timestamps are new and some recorded paths still point to the original checkout.
+Copying the build folder is only part of the work. Fresh source timestamps and paths pointing to the original checkout can still cause Cargo to rebuild.
 
 ### Preserve exact dates for unchanged sources
 
-Git writes the source files when creating a worktree, giving the source files new modification timestamps. Cargo checks timestamps when deciding whether to rebuild. A source file that looks newer than the existing build can trigger compilation even when the contents haven’t changed.
+Git gives newly checked-out source files fresh modification timestamps. Cargo uses timestamps when deciding whether to rebuild, so identical source code can look newer than the existing output and trigger compilation.
 
-Faster Rust Work Trees compares tracked files with the main checkout. Only regular files with identical contents receive the original timestamps. Changed files retain their new dates so Cargo can rebuild. Matching source directories also receive their original dates where appropriate.
+Faster Rust Work Trees restores the original timestamps only after checking that tracked regular files have identical contents. Changed files keep their new dates so Cargo can rebuild. Matching source directories also receive their original dates where appropriate.
 
-This took more care than just copying dates. In the first ripgrep evaluation, restoring timestamps through JavaScript lost nanosecond precision. One crate still compiled. The implementation now uses Python’s nanosecond timestamp operations, and the measured unchanged optimized builds compiled zero crates.
+The first ripgrep evaluation exposed a small but costly detail: JavaScript lost nanosecond precision when restoring timestamps, and one crate still compiled. Switching to Python’s nanosecond timestamp operations fixed the problem. The measured unchanged optimized builds then compiled zero crates.
 
 ### Relocate build-script records
 
-Cargo build scripts can record absolute paths, including paths watched for changes. Cargo saves build-script output in files inside the build folder, as described in the [Cargo build-script documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html).
+Build scripts can record absolute paths for Cargo to watch. Those records are saved inside the build folder, as described in the [Cargo build-script documentation](https://doc.rust-lang.org/cargo/reference/build-scripts.html).
 
-A cloned record may still point into the main checkout. Faster Rust Work Trees replaces original-checkout prefixes in those output records with the new worktree’s path, then restores the records’ exact timestamps.
-
-That fixes the build-script records. Paths embedded inside compiled programs or generated files may still need handling specific to the repository.
+Cloned records may still point into the main checkout. Faster Rust Work Trees replaces those checkout prefixes with the new worktree’s path and restores the exact record timestamps. Paths embedded inside compiled programs or generated files may need additional handling specific to the repository.
 
 ### Keep the build settings consistent
 
-A debug build won’t supply a missing release build. Changing features, compiler versions, targets, environment settings, or commands can also require compilation.
+A debug build won’t supply a missing release build. Changes to features, compiler versions, targets, environment settings, or commands can also require compilation. Prepare the main checkout using the same commands the new worktrees will run. Keep Cargo output inside each checkout and leave `CARGO_TARGET_DIR` unset. Stop builds before cloning: a build folder being modified is not a consistent snapshot.
 
-Build the main checkout using the commands the new worktrees will actually run. Keep Cargo output inside each checkout and leave `CARGO_TARGET_DIR` unset. Stop builds before cloning: a build folder being modified is not a consistent snapshot.
-
-## Follow one coding task from worktree creation to tested change
-
-For a simple Rust repository that builds and tests from its root, create `faster-rust-worktrees.json` in the main checkout:
-
-```json
-{
-  "baseRef": "HEAD",
-  "worktreeDirectory": ".agents/worktree",
-  "targetDirectories": ["target"],
-  "cargoCommands": [
-    { "cwd": ".", "argv": ["cargo", "build", "--locked"] },
-    { "cwd": ".", "argv": ["cargo", "test", "--locked", "--no-run"] }
-  ]
-}
-```
-
-Adapt the working directories and arguments to the repository. Add `/.agents/worktree/` to the repository’s ignore rules. Commit the configuration, ignore rule, and existing lockfile before preparing the main checkout’s build output.
-
-From the main checkout, build the executable and test executables:
-
-```bash
-cargo build --locked
-cargo test --locked --no-run
-```
-
-Create the task’s branch and worktree:
-
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees create fix-example
-```
-
-Check the creation report. The command tells you whether the build folder was cloned, whether the original output was missing, or whether copy-on-write cloning was unavailable.
-
-Enter the worktree and run the normal commands:
-
-```bash
-cd .agents/worktree/fix-example
-cargo build --locked
-cargo test --locked
-```
-
-The `create` command prepares the worktree. You still run Cargo to build and test. After the coding agent changes source code, run the same commands again: Cargo should compile the affected code and reuse the output that remains current.
-
-I also want to check what happens after a source change. The integration test uses a real Cargo workspace with an application, a shared dependency, and a build script watching an absolute source path. The unchanged first build produced:
-
-```text
-Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
-```
-
-Then the test changes the dependency in one worktree and runs two builds concurrently. The changed program prints `43`. The other worktree and the original executable still print `42`. The changed code runs, and the other builds remain independent.
+The integration test checks both reuse and independence in a real Cargo workspace. An unchanged first build compiles no crates. After a dependency changes in one worktree, two concurrent builds produce independent results: the changed program prints `43`, while the other worktree and the original executable still print `42`.
 
 ## The numbers for three worktrees
 
 Creation plus first-build time for three worktrees, with unchanged sources and a main checkout already built with matching settings:
 
-| Project | Worktrees | Profile | Ordinary | Optimized |
-|---|---:|---|---:|---:|
-| late-sh | 3 | Release | 396 s | 16.3 s |
-| ripgrep | 3 | Debug | 20.9 s | 1.82 s |
-| fd | 3 | Debug | 18.6 s | 1.64 s |
+![Build-time gains for three worktrees: late-sh is 24 times faster, ripgrep 11.5 times faster, and fd 11.4 times faster. Each ordinary bar represents 100 percent of that project’s total.](image-build-time.png)
 
 Additional allocated space with three built worktrees retained together:
 
-| Project | Ordinary | Optimized | Reduction |
-|---|---:|---:|---:|
-| late-sh | 10.5 GB | 254 MB | 97.6% |
-| ripgrep | 883 MB | 15.0 MB | 98.3% |
-| fd | 484 MB | 3.84 MB | 99.2% |
+![Disk-space gains for three built worktrees: 97.6 percent saved for late-sh, 98.3 percent for ripgrep, and 99.2 percent for fd. Each ordinary bar represents 100 percent of that project’s additional allocation.](image-disk-space.png)
 
-The tables scale the recorded results to three worktrees: three tenths of the ten-worktree measurements for late-sh timing and all storage figures, and three times the one-worktree timing medians for ripgrep and fd.
+To get the three-worktree figures, the charts use three tenths of the ten-worktree measurements for late-sh timing and all storage results. Ripgrep and fd times use three times their one-worktree medians.
 
-The source one-worktree comparisons and ripgrep and fd storage comparisons were repeated three times. The late-sh ten-worktree comparison is one complete paired run. All measured optimized unchanged first builds compiled zero crates.
+The one-worktree comparisons and the ripgrep and fd storage comparisons were repeated three times. The late-sh ten-worktree comparison has one complete paired run. All measured optimized unchanged first builds compiled zero crates.
 
-These totals add up sequential creation and first builds. They don’t measure three simultaneous builds. Creating an optimized worktree can actually take longer because cloning and preparing output costs time. The saving comes when Cargo reuses the output. You still pay for the initial main-checkout build and for compiling later source changes.
+The time totals cover sequential creation and first builds, not three simultaneous builds. Cloning and preparing output can make worktree creation itself slower. The saving comes in the first build. Initial compilation in the main checkout and later source changes still cost time.
 
-The source storage measurements used an isolated Apple File System volume, counting shared blocks once and retaining all measured worktrees together. The figures exclude the already-built main checkout and common Cargo caches. Summing apparent folder sizes would misrepresent the benefit of shared blocks.
-
-Drive lifetime matters to me too. Deleting a build folder frees space, but doesn’t undo the writes used to produce the build. Reusing compiled output avoids generating the same files again. The measurements here cover allocation, though: they don’t measure physical writes or establish how much longer a drive would last.
+Storage was measured on an isolated Apple File System volume with all worktrees retained together and shared blocks counted once. The figures exclude the built main checkout and common Cargo caches. Adding up apparent folder sizes would count shared data repeatedly.
 
 The [late-sh measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/late_sh_measurements.md), [timing evaluation](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation.md), and [storage measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/space_measurements.md) include conditions, raw evidence, and reproduction methods.
 
-## Try Faster Rust Work Trees in your repository
+## Use the skill with your coding agent
 
-Start with:
+The intended workflow is to let your coding agent handle setup and worktree creation. You don’t need to learn the underlying command-line tool.
 
-```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees --help
-```
+Start by installing the [faster_rust_worktrees skill](https://github.com/jeromeetienne/faster-rust-worktrees/tree/main/skills/faster_rust_worktrees) for your coding agent. A skill is a reusable set of instructions. The [repository](https://github.com/jeromeetienne/faster-rust-worktrees) is the starting point for installation and setup details.
 
-Requirements are Node.js 20.11 or later, Git, Rust, Cargo, Python 3, and a file system supporting copy-on-write cloning. macOS has live verification; Linux cloning support is implemented but evaluation on a suitable Linux file system remains pending.
+Once the skill is available, ask:
 
-The [faster_rust_worktrees skill](https://github.com/jeromeetienne/faster-rust-worktrees/tree/main/skills/faster_rust_worktrees) helps a coding agent find repository-specific commands, configure the tool, and verify reuse and changed behaviour. The skill remains Draft while unattended adoption is unevaluated.
+> Use faster_rust_worktrees to configure this Rust repository. Verify that unchanged builds reuse Cargo output and that source changes still build and test correctly. Integrate Faster Rust Work Trees into this repository’s worktree workflow.
 
-Use the [setup reference](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/skills/faster_rust_worktrees/references/setup.md) for configuration and cleanup. Cleanup previews candidates before removal; stop builds before applying removal. For repeatable automation, pin an available reviewed Git reference in the package URL.
+The coding agent discovers the real build and test commands, prepares the main checkout’s output, checks file-system support, and verifies reuse in a disposable worktree. After those checks pass, the coding agent updates the repository’s worktree instructions so later coding tasks use the configured workflow.
+
+Then ask for your next task as usual:
+
+> Fix this issue in a new worktree, using the repository’s configured Faster Rust Work Trees workflow. Run the relevant tests and prepare the changes for review.
+
+The coding agent creates the branch and worktree, reuses the existing build output, makes the changes, and runs the tests. You review the result. Source changes still require compilation; unchanged dependencies are where the repeated work can be avoided.
+
+macOS has live verification. Linux support is implemented, but evaluation on a suitable Linux file system remains pending. The skill is still Draft, and unattended adoption hasn’t been evaluated, so the first setup includes verification in your actual repository.
+
+The [setup reference](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/skills/faster_rust_worktrees/references/setup.md) covers requirements, configuration, and cleanup for the coding agent to follow.

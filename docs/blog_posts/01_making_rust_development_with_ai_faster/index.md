@@ -18,3 +18,5 @@ This file lists the structure and writing plan for the article.
 - [ARTICLE.md](ARTICLE.md): The complete technical article draft for review before publication on dev.to.
 - [image-main-v4.png](image-main-v4.png): The user-provided comparison image for three ordinary and optimized Rust worktrees.
 - [image-main-v5.png](image-main-v5.png): The complete V4 image fitted to dev.to cover proportions with side padding and metadata removed.
+- [image-build-time.png](image-build-time.png): The bar chart comparing creation and first-build time, with speed multipliers and time saved.
+- [image-disk-space.png](image-disk-space.png): The bar chart comparing additional allocation, with space saved and allocation ratios.

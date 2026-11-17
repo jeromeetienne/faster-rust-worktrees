@@ -7,7 +7,7 @@
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
 - Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
 
-*With AI, each coding task gets its own worktree. Here’s how to create and build those worktrees more than 10 times faster.*
+*With AI, each coding task gets its own worktree. Here’s how to create and build your rust worktrees more than 10 times faster.*
 
 ## Purpose
 
@@ -18,9 +18,8 @@ Plan a technical article about Faster Rust Work Trees for publication on dev.to.
 1. **Parallel coding agents multiply the same Rust build cost.** Introduce the feature branch workflow, independent worktrees, repeated compilation, and one measured result.
 2. **Reuse an existing build while keeping worktrees independent.** Explain copy-on-write cloning and illustrate independent build folders sharing unchanged disk blocks.
 3. **Why cloning the build folder alone does not work.** Explain Cargo’s reuse checks and the handling of timestamps, recorded paths, and build settings.
-4. **Follow one coding task from worktree creation to tested change.** Demonstrate setup, worktree creation, build reuse, a source change, and tests.
-5. **What the measurements demonstrate.** Compare build time and additional allocated disk space, with measurement conditions and limits.
-6. **Try Faster Rust Work Trees in your repository.** Give requirements, the starting command, and links to configuration and cleanup instructions.
+4. **The numbers for three worktrees.** Compare build time and additional allocated disk space, with measurement conditions and limits.
+5. **Use the skill with your coding agent.** Explain skill installation, provide setup and task prompts, and describe the workflow the coding agent handles automatically.
 
 ## Reading this folder
 

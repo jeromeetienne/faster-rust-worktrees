@@ -9,7 +9,7 @@
 
 ## Editorial direction
 
-Use the agreed title and subtitle in [README.md](README.md). Write for developers using coding agents on Rust projects, introducing unfamiliar terms in plain words. Move from parallel coding tasks to repeated build costs, then explain the mechanism, demonstrate correctness, and present the measurements.
+Use the agreed title and subtitle in [README.md](README.md). Write for developers using coding agents on Rust projects, introducing unfamiliar terms in plain words. Move from parallel coding tasks to repeated build costs, then explain the mechanism, present the measurements, and finish with the skill-based workflow. Keep manual configuration and command-line details in the repository documentation.
 
 ## 1. Parallel coding agents multiply the same Rust build cost
 
@@ -32,32 +32,25 @@ Show why source timestamps, recorded checkout paths, and matching commands, feat
 Describe how Faster Rust Work Trees preserves exact timestamps for identical tracked files and adjusts build-script records while preserving their timestamps.
 Connect each implementation step to the specific reuse problem the implementation step solves.
 
-## 4. Follow one coding task from worktree creation to tested change
-
-Walk through configuring a real Rust repository and building the main checkout with the commands the worktrees will use.
-Create an optimized worktree, run the unchanged first build, and show the observed reuse using actual command output.
-Then modify source code, rebuild, and run tests to demonstrate that necessary compilation still happens and the main checkout remains independent.
-Explain the reusable tool and how the faster_rust_worktrees skill helps a coding agent configure repository-specific commands.
-
-## 5. What the measurements demonstrate
+## 4. What the measurements demonstrate
 
 Compare ordinary and optimized worktrees using the published late-sh, ripgrep, and fd results, keeping each comparison’s build settings explicit.
 Present three-worktree creation plus first-build time and additional allocated disk space separately; state the linear extrapolation method and explain how shared disk blocks were counted in the source measurements.
 State which source results are repeated measurements and which are single runs, distinguish unchanged first builds from builds after source changes, and explain that summed sequential build times do not measure concurrent build elapsed time.
 Keep measured allocation separate from estimates about writes or drive lifetime; explain that creation alone can take longer even when creation plus building is much faster.
 
-## 6. Try Faster Rust Work Trees in your repository
+## 5. Use the skill with your coding agent
 
-Give the requirements and the command readers can use to get started, linking to the repository’s configuration instructions.
-Explain how the faster_rust_worktrees skill helps coding agents identify the actual build commands and verify reuse in the receiving repository.
-State tested macOS support and pending Linux evaluation, with relevant file-system requirements and repository-specific limits.
-Link to cleanup instructions and explain that builds must be stopped while cloning or applying cleanup.
+Explain that the reader installs faster_rust_worktrees and asks the coding agent to configure the repository, with installation details linked to the repository.
+Give a short setup prompt and a normal issue-fix prompt, rather than manual configuration files or shell commands.
+Describe how the coding agent verifies reuse and changed-source correctness, then integrates the configured workflow into repository instructions.
+State macOS support, pending Linux evaluation, and draft skill status; link to detailed requirements and cleanup instructions.
 
 ## Visuals
 
 - **Social media card and article cover:** Use the agreed title and subtitle with a comparison of repeated ordinary builds and independent build folders sharing unchanged disk blocks. Keep any measured number tied to its project and test conditions.
 - **Technical diagram for section 2:** Show the built main checkout, two new worktrees, shared unchanged disk blocks, and separate blocks after a change. Make the independence of the build folders clear.
-- **Results for section 5:** Use compact tables for build time and additional allocated disk space, with measurement conditions nearby.
+- **Results for section 4:** Use separate horizontal bar charts for build time and additional allocation, normalizing each project’s ordinary case to 100% and labelling absolute totals, speed multipliers, and time or space saved.
 
 ## Evidence and preparation
 
@@ -67,4 +60,4 @@ Link to cleanup instructions and explain that builds must be stopped while cloni
 - [Space measurements](../../space_measurements.md): Allocated-space evidence and the method for counting shared blocks.
 - [Setup reference](../../../skills/faster_rust_worktrees/references/setup.md): Receiving-repository configuration and limits.
 
-Before drafting technical examples, check the implementation against the explanation. Run the selected walkthrough in a representative real repository and retain the command output used in the article. Review the article draft and social media card before publication on dev.to.
+Check the implementation and skill instructions against the explanation. Keep the real Cargo verification evidence available through the linked evaluation records. The article’s practical examples are prompts to the coding agent, with manual commands left in the repository documentation. Review the article draft and social media card before publication on dev.to.

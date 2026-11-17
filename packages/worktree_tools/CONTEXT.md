@@ -4,6 +4,8 @@
 
 Reusable Rust worktree optimization and cleanup.
 
+Direct tool use and development are documented in [README.md](README.md); the [root README](../../README.md) explains skill-based use.
+
 ## Key Exports & Entry Points
 
 - src/: public tool interface.
