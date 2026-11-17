@@ -5,9 +5,9 @@ import Path from 'node:path';
 import ChildProcess from 'node:child_process';
 import Test from 'node:test';
 import { z } from 'zod';
-import { Configuration, configurationSchema } from '../src/configuration.js';
-import { WorktreeCreate } from '../src/worktree_create.js';
-import { DirectoryClone } from '../src/directory_clone.js';
+import { Configuration, configurationSchema } from '../src/repository/configuration.js';
+import { WorktreeCreate } from '../src/worktrees/worktree_create.js';
+import { DirectoryClone } from '../src/cargo_reuse/directory_clone.js';
 
 const __filename = import.meta.filename;
 const __dirname = import.meta.dirname;

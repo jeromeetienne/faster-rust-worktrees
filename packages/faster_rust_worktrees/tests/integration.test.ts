@@ -4,10 +4,10 @@ import Fs from 'node:fs';
 import Os from 'node:os';
 import Path from 'node:path';
 import Test from 'node:test';
-import { Configuration, configurationSchema } from '../src/configuration.js';
-import { WorktreeCreate } from '../src/worktree_create.js';
-import { TargetCleanup } from '../src/target_cleanup.js';
-import { WorktreeGit } from '../src/worktree_git.js';
+import { Configuration, configurationSchema } from '../src/repository/configuration.js';
+import { WorktreeCreate } from '../src/worktrees/worktree_create.js';
+import { TargetCleanup } from '../src/worktrees/target_cleanup.js';
+import { WorktreeGit } from '../src/repository/worktree_git.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

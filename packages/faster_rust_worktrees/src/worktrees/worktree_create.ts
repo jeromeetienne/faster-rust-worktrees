@@ -1,12 +1,12 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
-import { Configuration } from './configuration.js';
-import type { RepositoryConfiguration } from './configuration.js';
-import { DirectoryClone } from './directory_clone.js';
-import { SourceDates } from './source_dates.js';
-import { WorktreeGit } from './worktree_git.js';
-import { BuildScriptOutputs } from './build_script_outputs.js';
-import { ProcessCommand } from './process_command.js';
+import { Configuration } from '../repository/configuration.js';
+import type { RepositoryConfiguration } from '../repository/configuration.js';
+import { DirectoryClone } from '../cargo_reuse/directory_clone.js';
+import { SourceDates } from '../cargo_reuse/source_dates.js';
+import { WorktreeGit } from '../repository/worktree_git.js';
+import { BuildScriptOutputs } from '../cargo_reuse/build_script_outputs.js';
+import { ProcessCommand } from '../repository/process_command.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

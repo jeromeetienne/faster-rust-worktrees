@@ -1,7 +1,7 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
 import { FileDates } from './file_dates.js';
-import { WorktreeGit } from './worktree_git.js';
+import { WorktreeGit } from '../repository/worktree_git.js';
 /** Counts of unchanged source entries whose dates were restored. */
 export type SourceDatesResult = {
 	/** Restored regular tracked files. */

@@ -1,9 +1,9 @@
 #!/usr/bin/env -S npx --no-install tsx
 import { Command } from 'commander';
-import { Configuration } from './configuration.js';
-import { WorktreeGit } from './worktree_git.js';
-import { WorktreeCreate } from './worktree_create.js';
-import { TargetCleanup } from './target_cleanup.js';
+import { Configuration } from './repository/configuration.js';
+import { WorktreeGit } from './repository/worktree_git.js';
+import { WorktreeCreate } from './worktrees/worktree_create.js';
+import { TargetCleanup } from './worktrees/target_cleanup.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,9 +1,9 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
-import { Configuration } from './configuration.js';
-import type { RepositoryConfiguration } from './configuration.js';
-import { ProcessCommand } from './process_command.js';
-import { WorktreeGit } from './worktree_git.js';
+import { Configuration } from '../repository/configuration.js';
+import type { RepositoryConfiguration } from '../repository/configuration.js';
+import { ProcessCommand } from '../repository/process_command.js';
+import { WorktreeGit } from '../repository/worktree_git.js';
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
