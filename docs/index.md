@@ -15,3 +15,5 @@ This file lists the documentation available in this folder.
 - [evaluation.md](evaluation.md): Real Cargo correctness, independent-project measurements, first-attempt findings, raw logs, and publication boundaries.
 
 - [space_measurements.md](space_measurements.md): Repeated allocated-space measurements for one and ten built worktrees, including main-checkout totals, raw readings, and the reproduction method.
+
+- [blog_posts/](blog_posts/index.md): Article structures and writing plans for publication, starting with Making Rust Development with AI Faster.
