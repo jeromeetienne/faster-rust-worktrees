@@ -1,12 +1,12 @@
 {
-  "name": "faster-rust-worktrees",
+  "name": "faster_rust_worktrees",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "license": "MIT",
   "packageManager": "pnpm@10.33.2",
   "bin": {
-    "faster-rust-worktrees": "packages/faster_rust_worktrees/src/cli_launcher.mjs"
+    "faster_rust_worktrees": "packages/faster_rust_worktrees/src/cli_launcher.mjs"
   },
   "files": [
     "packages/faster_rust_worktrees/src",
@@ -16,8 +16,8 @@
   ],
   "scripts": {
     "dev": "tsx packages/faster_rust_worktrees/src/cli.ts",
-    "test": "pnpm --filter faster_rust_worktrees test",
-    "check": "pnpm --filter faster_rust_worktrees check"
+    "test": "pnpm --filter ./packages/faster_rust_worktrees test",
+    "check": "pnpm --filter ./packages/faster_rust_worktrees check"
   },
   "dependencies": {
     "commander": "^14.0.0",

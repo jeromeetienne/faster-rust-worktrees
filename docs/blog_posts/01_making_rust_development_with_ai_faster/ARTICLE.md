@@ -5,7 +5,7 @@
 - Status: Article draft for review before publication on dev.to
 - Related framing: [Repository instructions](../../../AGENTS.md)
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
-- Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
+- Related issue: [Article planning](https://github.com/jeromeetienne/faster_rust_worktrees/issues/11)
 
 *With AI, each coding task gets its own worktree. Here’s how to create and build your rust worktrees more than 10 times faster.*
 
@@ -17,13 +17,13 @@ This is the [feature](https://docs.github.com/en/get-started/using-github/github
 
 The annoying part comes before any code changes. A fresh Rust worktree usually has an empty Cargo build folder, so the dependencies already compiled in the main checkout get compiled again. And again for the next task.
 
-For [late-sh](https://github.com/mpiorowski/late-sh), a program I contributed to recently, the benchmark scaled to three worktrees gives **6 minutes 36 seconds ordinarily, compared with 16 seconds using Faster Rust Work Trees** for creation and first release builds: approximately **24 times faster**. [Details here](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/README.md).
+For [late-sh](https://github.com/mpiorowski/late-sh), a program I contributed to recently, the benchmark scaled to three worktrees gives **6 minutes 36 seconds ordinarily, compared with 16 seconds using Faster Rust Work Trees** for creation and first release builds: approximately **24 times faster**. [Details here](https://github.com/jeromeetienne/faster_rust_worktrees/blob/main/README.md).
 
 Additional allocated space for those three worktrees falls from **10.5 GB to 254 MB**, saving about **10.2 GB**, with **41 times less** new allocation. Reusing compiled output can also reduce unnecessary writes and help extend drive lifetime. The lifetime gain depends on actual writes and other drive activity; disk allocation alone doesn’t measure wear.
 
 ## Reuse an existing build while keeping worktrees independent
 
-[Faster Rust Work Trees](https://github.com/jeromeetienne/faster-rust-worktrees) gives each new worktree a copy of the main checkout’s Cargo output using **copy-on-write cloning**.
+[Faster Rust Work Trees](https://github.com/jeromeetienne/faster_rust_worktrees) gives each new worktree a copy of the main checkout’s Cargo output using **copy-on-write cloning**.
 
 The file system initially stores unchanged contents in shared disk blocks. Each worktree still has its own files. Writing new data allocates separate blocks for the changes, leaving the other worktrees’ contents untouched.
 
@@ -75,13 +75,13 @@ The time totals cover sequential creation and first builds, not three simultaneo
 
 Storage was measured on an isolated Apple File System volume with all worktrees retained together and shared blocks counted once. The figures exclude the built main checkout and common Cargo caches. Adding up apparent folder sizes would count shared data repeatedly.
 
-The [late-sh measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/late_sh_measurements.md), [timing evaluation](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/evaluation.md), and [storage measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/space_measurements.md) include conditions, raw evidence, and reproduction methods.
+The [late-sh measurements](https://github.com/jeromeetienne/faster_rust_worktrees/blob/main/docs/evaluation/late_sh_measurements.md), [timing evaluation](https://github.com/jeromeetienne/faster_rust_worktrees/blob/main/docs/evaluation/evaluation.md), and [storage measurements](https://github.com/jeromeetienne/faster_rust_worktrees/blob/main/docs/evaluation/space_measurements.md) include conditions, raw evidence, and reproduction methods.
 
 ## Use the skill with your coding agent
 
 The intended workflow is to let your coding agent handle setup and worktree creation. You don’t need to learn the underlying command-line tool.
 
-Start by installing the [faster_rust_worktrees skill](https://github.com/jeromeetienne/faster-rust-worktrees/tree/main/skills/faster_rust_worktrees) for your coding agent. A skill is a reusable set of instructions. The [repository](https://github.com/jeromeetienne/faster-rust-worktrees) is the starting point for installation and setup details.
+Start by installing the [faster_rust_worktrees skill](https://github.com/jeromeetienne/faster_rust_worktrees/tree/main/skills/faster_rust_worktrees) for your coding agent. A skill is a reusable set of instructions. The [repository](https://github.com/jeromeetienne/faster_rust_worktrees) is the starting point for installation and setup details.
 
 Once the skill is available, ask:
 
@@ -97,4 +97,4 @@ The coding agent creates the branch and worktree, reuses the existing build outp
 
 macOS has live verification. Linux support is implemented, but evaluation on a suitable Linux file system remains pending. The skill is still Draft, and unattended adoption hasn’t been evaluated, so the first setup includes verification in your actual repository.
 
-The [setup reference](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/skills/faster_rust_worktrees/references/setup.md) covers requirements, configuration, and cleanup for the coding agent to follow.
+The [setup reference](https://github.com/jeromeetienne/faster_rust_worktrees/blob/main/skills/faster_rust_worktrees/references/setup.md) covers requirements, configuration, and cleanup for the coding agent to follow.

@@ -5,7 +5,7 @@
 - Status: Maintained overview for people
 - Related framing: [Repository instructions](../../../AGENTS.md)
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
-- Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
+- Related issue: [Article planning](https://github.com/jeromeetienne/faster_rust_worktrees/issues/11)
 
 *With AI, each coding task gets its own worktree. Here’s how to create and build your rust worktrees more than 10 times faster.*
 

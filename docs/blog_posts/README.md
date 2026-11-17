@@ -5,7 +5,7 @@
 - Status: Maintained overview for people
 - Related framing: [Repository instructions](../../AGENTS.md)
 - Related rules: [Docs folder system](../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
-- Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
+- Related issue: [Article planning](https://github.com/jeromeetienne/faster_rust_worktrees/issues/11)
 
 This folder holds article structures, writing plans, and future drafts for publication. Each numbered article folder keeps its agreed title, subtitle, and structure in README.md and its writing plan in PLAN.md.
 

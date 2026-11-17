@@ -7,7 +7,7 @@ description: Configure and verify the shared Faster Rust Work Trees tool in a Ru
 
 **Status: Draft.** Synthetic correctness and independent project measurements do not alone establish that these instructions can be adopted without help. Keep draft status until reviewed independent adoption evidence supports changing status.
 
-Use the shared tool from [Faster Rust Work Trees](https://github.com/jeromeetienne/faster-rust-worktrees). Configure the tool in the receiving repository; never copy or regenerate its implementation. Read [configuration and limits](references/setup.md) before making changes.
+Use the shared tool from [Faster Rust Work Trees](https://github.com/jeromeetienne/faster_rust_worktrees). Configure the tool in the receiving repository; never copy or regenerate its implementation. Read [configuration and limits](references/setup.md) before making changes.
 
 ## Discover and prove feasibility
 
