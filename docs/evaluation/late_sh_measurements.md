@@ -3,12 +3,12 @@
 - Created: 17 November 2026
 - Last updated: 17 November 2026
 - Status: Measured release-build evidence
-- Related framing: [Repository instructions](../AGENTS.md)
-- Related rules: [Docs folder system](../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
+- Related framing: [Repository instructions](../../AGENTS.md)
+- Related rules: [Docs folder system](../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
 
 ## Scope
 
-The larger application late-sh is measured first in the [README comparison](../README.md#the-difference-measured). The existing [ripgrep and fd timing evaluation](evaluation.md) and [one- and ten-worktree storage evaluation](space_measurements.md) remain unchanged historical measurements.
+The larger application late-sh is measured first in the [README comparison](../../README.md#the-difference-measured). The existing [ripgrep and fd timing evaluation](evaluation.md) and [one- and ten-worktree storage evaluation](space_measurements.md) remain unchanged historical measurements.
 
 The late-sh command is its documented standalone release build, `cargo build --release --bin late`, with `--locked --offline` added for repeatable worktree runs. The original checkout was built first using the same command without `--offline`. Initial compilation and dependency downloads are excluded from both cases. The original build in the one-worktree trial took 137.045 seconds. All worktrees in a comparison use identical source, lockfile, compiler, arguments, and environment. No application code was changed.
 

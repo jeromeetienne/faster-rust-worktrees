@@ -75,7 +75,7 @@ The time totals cover sequential creation and first builds, not three simultaneo
 
 Storage was measured on an isolated Apple File System volume with all worktrees retained together and shared blocks counted once. The figures exclude the built main checkout and common Cargo caches. Adding up apparent folder sizes would count shared data repeatedly.
 
-The [late-sh measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/late_sh_measurements.md), [timing evaluation](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation.md), and [storage measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/space_measurements.md) include conditions, raw evidence, and reproduction methods.
+The [late-sh measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/late_sh_measurements.md), [timing evaluation](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/evaluation.md), and [storage measurements](https://github.com/jeromeetienne/faster-rust-worktrees/blob/main/docs/evaluation/space_measurements.md) include conditions, raw evidence, and reproduction methods.
 
 ## Use the skill with your coding agent
 

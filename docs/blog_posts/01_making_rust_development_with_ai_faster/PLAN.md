@@ -55,9 +55,9 @@ State macOS support, pending Linux evaluation, and draft skill status; link to d
 ## Evidence and preparation
 
 - [Repository overview](../../../README.md): Current commands, mechanism, support, and configuration entry points.
-- [late-sh measurements](../../late_sh_measurements.md): The lead comparison, environment, raw evidence, and measurement method.
-- [Evaluation](../../evaluation.md): Correctness checks and supporting ripgrep and fd timing evidence.
-- [Space measurements](../../space_measurements.md): Allocated-space evidence and the method for counting shared blocks.
+- [late-sh measurements](../../evaluation/late_sh_measurements.md): The lead comparison, environment, raw evidence, and measurement method.
+- [Evaluation](../../evaluation/evaluation.md): Correctness checks and supporting ripgrep and fd timing evidence.
+- [Space measurements](../../evaluation/space_measurements.md): Allocated-space evidence and the method for counting shared blocks.
 - [Setup reference](../../../skills/faster_rust_worktrees/references/setup.md): Receiving-repository configuration and limits.
 
 Check the implementation and skill instructions against the explanation. Keep the real Cargo verification evidence available through the linked evaluation records. The article’s practical examples are prompts to the coding agent, with manual commands left in the repository documentation. Review the article draft and social media card before publication on dev.to.

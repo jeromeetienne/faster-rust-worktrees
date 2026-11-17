@@ -8,12 +8,6 @@
 
 This file lists the documentation available in this folder.
 
-- [README.md](README.md): the documentation overview for people.
-
-- [late_sh_measurements.md](late_sh_measurements.md): One- and ten-worktree late-sh release-build time and allocated storage, raw evidence, and Rust source size compared with ripgrep and fd.
-
-- [evaluation.md](evaluation.md): Real Cargo correctness, independent-project measurements, first-attempt findings, raw logs, and publication boundaries.
-
-- [space_measurements.md](space_measurements.md): Repeated allocated-space measurements for one and ten built worktrees, including main-checkout totals, raw readings, and the reproduction method.
-
+- [README.md](README.md): The documentation overview for people.
+- [evaluation/](evaluation/index.md): Correctness checks, build-time measurements, allocated-storage measurements, and reproduction methods.
 - [blog_posts/](blog_posts/index.md): Article structures and writing plans for publication, starting with Making Rust Development with AI Faster.

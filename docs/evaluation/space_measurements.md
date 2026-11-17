@@ -1,10 +1,10 @@
 # One- and ten-worktree space measurements
 
 - Created: 16 November 2026
-- Last updated: 16 November 2026
+- Last updated: 17 November 2026
 - Status: Repeated isolated APFS allocation measurements
-- Related framing: [Repository instructions](../AGENTS.md)
-- Related rules: [Folder constraints](../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
+- Related framing: [Repository instructions](../../AGENTS.md)
+- Related rules: [Folder constraints](../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
 - Related issue: [Issue 3](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3)
 
 ## Measured disk space: one and ten worktrees

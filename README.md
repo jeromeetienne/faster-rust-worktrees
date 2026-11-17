@@ -72,9 +72,9 @@ Measured on macOS with unchanged sources: the documented `cargo build --release 
 | ripgrep | 37,752 | 102 |
 | fd | 7,179 | 25 |
 
-Counts use the source line counter cloc 2.06 on tracked Rust files at the measured revisions, excluding blank lines, comments, and vendored code. Tests, examples, and all workspace members are included; these are repository source counts, not counts of only the code compiled into the measured binary. See the [late-sh measurements and source-count method](docs/late_sh_measurements.md).
+Counts use the source line counter cloc 2.06 on tracked Rust files at the measured revisions, excluding blank lines, comments, and vendored code. Tests, examples, and all workspace members are included; these are repository source counts, not counts of only the code compiled into the measured binary. See the [late-sh measurements and source-count method](docs/evaluation/late_sh_measurements.md).
 
-Read the [timing results and commands](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919366785), [space results and measurement method](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919213926), or the [full evaluation](docs/evaluation.md).
+Read the [timing results and commands](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919366785), [space results and measurement method](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919213926), or the [full evaluation](docs/evaluation/evaluation.md).
 
 ## 126×: disk lifetime and the daily cost of rebuilding
 
