@@ -4,31 +4,47 @@
 
 A new Rust worktree usually starts with an empty build folder. Faster Rust Work Trees reuses the build you already have, giving each worktree independent Cargo output while sharing unchanged disk blocks.
 
-**Ten built ripgrep worktrees: 2,942 MB of added space becomes 50 MB.**
+**Ten built late-sh release worktrees: 34.98 GB of added space becomes 846 MB.**
 
 A reusable tool does the work. The [faster_rust_worktrees skill](skills/faster_rust_worktrees/SKILL.md) helps your coding agent configure the tool for your repository.
 
 ## The difference, measured
 
-Creating one worktree **and completing its first build**, with the main checkout already built:
+Creating worktrees **and completing their first builds**, with the main checkout already built. Ten-worktree time is the total for ten sequential creations and builds:
 
-| Project | Ordinary | Optimized | Less waiting |
-|---|---:|---:|---:|
-| ripgrep | 6.979 seconds | **0.606 seconds** | **91.3%** |
-| fd | 6.207 seconds | **0.546 seconds** | **91.2%** |
+| Project | Worktrees | Build profile | Ordinary | Optimized | Less waiting |
+|---|---:|---|---:|---:|---:|
+| late-sh | 1 | Release | 128.132 seconds | **5.852 seconds** | **95.4%** |
+| late-sh | 10 | Release | 1319.335 seconds | **54.450 seconds** | **95.9%** |
+| ripgrep | 1 | Debug | 6.979 seconds | **0.606 seconds** | **91.3%** |
+| fd | 1 | Debug | 6.207 seconds | **0.546 seconds** | **91.2%** |
 
 Added allocated space **after building every worktree**:
 
 | Project | Worktrees | Ordinary | Optimized | Space reduction |
 |---|---:|---:|---:|---:|
+| late-sh | 1 | 3,512 MB | **84.4 MB** | **97.6%** |
+| late-sh | 10 | 34,983 MB | **846.0 MB** | **97.6%** |
 | ripgrep | 1 | 294 MB | **5.0 MB** | **98.3%** |
 | ripgrep | 10 | 2,942 MB | **50.1 MB** | **98.3%** |
 | fd | 1 | 161 MB | **1.3 MB** | **99.2%** |
 | fd | 10 | 1,613 MB | **12.8 MB** | **99.2%** |
 
-Each comparison was repeated three times; the tables show medians. All optimized first builds compiled **zero crates**. Ten-worktree space was measured with ten built worktrees present together, rather than estimated from one worktree.
+One-worktree comparisons and the earlier ripgrep and fd ten-worktree space comparisons were repeated three times; those rows show medians. The late-sh ten-worktree rows show one completed run per case. All optimized first builds compiled **zero crates**. Ten-worktree space was measured with ten built worktrees present together, rather than estimated from one worktree.
 
-Measured on macOS with unchanged debug builds. Space excludes the built main checkout and common Cargo caches; MB means 1,000,000 bytes. Allocated space was measured inside an isolated Apple File System volume, counting shared blocks once. Source changes and other environments can change the savings.
+Measured on macOS with unchanged sources: the documented `cargo build --release --bin late` build for late-sh, and debug builds for ripgrep and fd. Each project's ordinary and optimized builds use identical settings; absolute build times across projects also reflect the different profiles. Space excludes the built main checkout and common Cargo caches; MB means 1,000,000 bytes. Allocated space was measured inside an isolated Apple File System volume, counting shared blocks once. Source changes and other environments can change the savings.
+
+### A larger application: late-sh
+
+[late-sh](https://github.com/mpiorowski/late-sh) provides a terminal application, a Secure Shell service, and web services. Its release build gives an example from a larger Rust application alongside the smaller command-line tools ripgrep and fd. An ordinary worktree compiled 466 crates; an optimized worktree compiled zero.
+
+| Project | Rust code lines | Rust files |
+|---|---:|---:|
+| late-sh | 579,109 | 1,794 |
+| ripgrep | 37,752 | 102 |
+| fd | 7,179 | 25 |
+
+Counts use the source line counter cloc 2.06 on tracked Rust files at the measured revisions, excluding blank lines, comments, and vendored code. Tests, examples, and all workspace members are included; these are repository source counts, not counts of only the code compiled into the measured binary. See the [late-sh measurements and source-count method](docs/late_sh_measurements.md).
 
 Read the [timing results and commands](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919366785), [space results and measurement method](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3#issuecomment-6919213926), or the [full evaluation](docs/evaluation.md).
 
@@ -50,7 +66,7 @@ A solid-state drive (SSD) has finite write endurance. Its flash memory can withs
 
 Faster Rust Work Trees shares existing build blocks and reuses compiled dependencies. Each optimized worktree in our tests completed its unchanged first build with **zero crates compiled**. That avoids regenerating the same dependency artifacts and is expected to reduce unnecessary writes as worktrees are created repeatedly. The benefit matters even when the disk has room to spare, and becomes particularly relevant for Cargo build folders reaching tens of gigabytes.
 
-For ten fd worktrees, the measured added allocation fell from **1,613 MB to 12.8 MB**—about **1/126 of the ordinary allocation**. Ten ripgrep worktrees used about **1/59 of the ordinary added allocation**.
+For ten late-sh release worktrees, measured added allocation fell from **34.98 GB to 846 MB**—about **1/41.4 of ordinary allocation**. Ten ripgrep worktrees used about **1/59** of ordinary added allocation; ten fd worktrees fell from **1,613 MB to 12.8 MB**, about **1/126**. The 126-fold estimate above uses fd's result; late-sh's measured factor is smaller.
 
 **An estimated 126-fold increase in lifetime before flash wears out, under the stated assumptions.** If the 126-fold allocation reduction corresponds to 126-fold fewer wear-causing writes, and other wear-causing writes are negligible, the lifetime before flash wears out would be approximately **126 times as long** at the same operation frequency. Under that model, the daily example also estimates **99.2 GB of avoided wear-causing writes**. The directly measured result is allocation reduction; the daily write and lifetime figures are assumption-based estimates.
 
