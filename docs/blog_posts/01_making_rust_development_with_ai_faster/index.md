@@ -16,7 +16,9 @@ This file lists the structure and writing plan for the article.
 - [image-main-v2.png](image-main-v2.png): The revised cinematic article cover with illuminated independent workspaces and the measured speed comparison.
 - [image-main-v3.png](image-main-v3.png): The earlier typography-led cover, showing measured creation-plus-first-build speed and allocated-space savings.
 - [ARTICLE.md](ARTICLE.md): The complete technical article draft for review before publication on dev.to.
+- [social_media.md](social_media.md): Six proposed social media posts, with advice on illustrations and spacing the posts over several weeks.
 - [image-main-v4.png](image-main-v4.png): The user-provided comparison image for three ordinary and optimized Rust worktrees.
 - [image-main-v5.png](image-main-v5.png): The complete V4 image fitted to dev.to cover proportions with side padding and metadata removed.
+- [image-main-v6.png](image-main-v6.png): The current article cover and social media illustration, supplied by the user, with three-worktree totals and measurement conditions.
 - [image-build-time.png](image-build-time.png): The bar chart comparing creation and first-build time, with speed multipliers and time saved.
 - [image-disk-space.png](image-disk-space.png): The bar chart comparing additional allocation, with space saved and allocation ratios.

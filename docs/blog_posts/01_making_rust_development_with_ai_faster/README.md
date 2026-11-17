@@ -13,6 +13,10 @@
 
 Plan a technical article about Faster Rust Work Trees for publication on dev.to. The title and subtitle above are agreed. The structure below is developed into the [article draft](ARTICLE.md), ready for review before publication.
 
+## dev.to draft
+
+The [existing dev.to draft](https://dev.to/jeromeetienne/making-rust-development-with-ai-faster-23p6/edit) remains unpublished. On 17 November 2026, the dev.to API update and readback verified that the body matches [ARTICLE.md](ARTICLE.md), with hosted chart URLs replacing local image paths, and that the cover uses [V6](image-main-v6.png). The three evaluation-document links use the current `docs/evaluation/` paths.
+
 ## Article structure
 
 1. **Parallel coding agents multiply the same Rust build cost.** Introduce the feature branch workflow, independent worktrees, repeated compilation, and one measured result.
@@ -25,18 +29,20 @@ Plan a technical article about Faster Rust Work Trees for publication on dev.to.
 
 Read [ARTICLE.md](ARTICLE.md) for the complete article draft. Read [PLAN.md](PLAN.md) for the intended content of each section, visual concepts, and evidence sources. See [index.md](index.md) for the folder contents.
 
+Read [social_media.md](social_media.md) for six proposed posts and advice on sharing the article over several weeks.
+
 ## Main image
 
-![Three-worktree comparison fitted to dev.to cover proportions, preserving the full original image.](image-main-v5.png)
+![Three-worktree totals for ordinary builds and Faster Rust Work Trees, estimated from late-sh release-build measurements on macOS.](image-main-v6.png)
 
-V5 resizes the user-provided V4 image to fit a 2400 × 1008 canvas, adding side padding to preserve all content. Embedded metadata has been removed. Earlier generated versions and their prompts remain available in [IMAGE_PROMPT.md](IMAGE_PROMPT.md).
+V6 is the current article cover and social media illustration. The user-provided correction labels time and allocation as totals for three worktrees, replaces the claim of instant reuse, and includes the measurement conditions. Earlier versions remain for reference; V5 fitted V4 to dev.to cover proportions. See [IMAGE_PROMPT.md](IMAGE_PROMPT.md) for the correction instructions and earlier prompts.
 
 ### Removing image metadata
 
 To export a copy without metadata, run this command from this article folder:
 
 ```bash
-npx --yes --package sharp-cli sharp -i image-main-v5.png -o image-main-v5-without-metadata.png
+npx --yes --package sharp-cli sharp -i image-main-v6.png -o image-main-v6-without-metadata.png
 ```
 
 [Sharp strips metadata by default](https://sharp.pixelplumbing.com/api-output/). This removes metadata such as Content Credentials, but does not guarantee removal of an invisible SynthID watermark embedded in the image. [OpenAI explains the difference between these provenance signals](https://help.openai.com/en/articles/8912793-provenance-signals-in-content-processed-by-openai-tools).

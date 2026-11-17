@@ -463,7 +463,7 @@ Largest within-checkpoint allocation spread in the ten-worktree trial: 147,456 b
 
 ### Reproduce the ten-worktree trial
 
-Use the linked upstream revision and measured tool implementation. Replace machine-specific paths in the reproduction harness below, limited to one repetition. The same setup and Cargo output are used for both cases; common Cargo caches remain outside the image. Raw command logs and property lists are saved outside the disposable volume.
+Use the linked upstream revision. The harness below points to the current tool executable, `packages/faster_rust_worktrees/src/cli_launcher.mjs`; replace machine-specific paths before running. To reproduce the historical tool revision exactly, use the linked measured tool checkout and its original executable, `packages/worktree_tools/src/run.mjs`, instead. Historical command logs above retain the paths used at measurement time. The harness is limited to one repetition. The same setup and Cargo output are used for both cases; common Cargo caches remain outside the image. Raw command logs and property lists are saved outside the disposable volume.
 
 ```bash
 hdiutil create -size 64g -fs APFS -type SPARSE -volname LateShTenBenchmark /private/tmp/late-sh-ten-benchmark.sparseimage
@@ -478,7 +478,7 @@ hdiutil attach -nobrowse -mountpoint /private/tmp/late-sh-ten-volume /private/tm
 import pathlib, subprocess, os, time, json, statistics, plistlib, shutil
 volume=pathlib.Path('/private/tmp/late-sh-ten-volume');root=volume/'late-sh'
 evidence=pathlib.Path('/private/tmp/late-sh-ten-evidence');evidence.mkdir(exist_ok=True)
-tool='/Users/jetienne/webwork/faster-rust-worktrees/packages/worktree_tools/src/run.mjs'
+tool='/Users/jetienne/webwork/faster-rust-worktrees/packages/faster_rust_worktrees/src/cli_launcher.mjs'
 env=dict(os.environ);env.pop('CARGO_TARGET_DIR',None);env['CARGO_TERM_COLOR']='never'
 rows=[];samples=[];builds=[]
 def run(args,cwd,label):
@@ -567,7 +567,7 @@ subprocess.run(['cloc', '--list-file=' + str(listing), '--include-lang=Rust',
 
 ## One-worktree reproduction
 
-Create and mount the isolated image before running the harness. Point `tool` at the measured tool checkout and the local clone path at late-sh pinned to the linked source revision. The harness writes logs outside the measurement volume. Ordinary creation uses the same tool with `--without-optimization`; optimized creation must explicitly report a copy-on-write clone.
+Create and mount the isolated image before running the harness. The `tool` path below uses the current executable; for the historical measured tool revision, use its original executable as explained in the ten-worktree reproduction section. Point the local clone path at late-sh pinned to the linked source revision. The harness writes logs outside the measurement volume. Ordinary creation uses the same tool with `--without-optimization`; optimized creation must explicitly report a copy-on-write clone.
 
 ```bash
 hdiutil create -size 40g -fs APFS -type SPARSE -volname LateShBenchmark /private/tmp/late-sh-benchmark.sparseimage
@@ -582,7 +582,7 @@ hdiutil attach -nobrowse -mountpoint /private/tmp/late-sh-benchmark-volume /priv
 import pathlib, subprocess, os, time, json, statistics, plistlib
 volume=pathlib.Path('/private/tmp/late-sh-benchmark-volume'); root=volume/'late-sh'
 evidence=pathlib.Path('/private/tmp/late-sh-benchmark-evidence'); evidence.mkdir(exist_ok=True)
-tool='/Users/jetienne/webwork/faster-rust-worktrees/packages/worktree_tools/src/run.mjs'
+tool='/Users/jetienne/webwork/faster-rust-worktrees/packages/faster_rust_worktrees/src/cli_launcher.mjs'
 env=dict(os.environ); env.pop('CARGO_TARGET_DIR',None); env['CARGO_TERM_COLOR']='never'
 def run(args,cwd,label):
  start=time.monotonic()

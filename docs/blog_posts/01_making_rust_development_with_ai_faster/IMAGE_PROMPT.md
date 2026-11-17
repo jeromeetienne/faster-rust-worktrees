@@ -7,9 +7,18 @@
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
 - Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
 
-The prompt below defines the main article image and social media card. Generate with the built-in image generation tool. Keep the agreed subtitle in the article rather than inside the image.
+The current main article image and social media card is [image-main-v6.png](image-main-v6.png), supplied by the user. Keep the agreed subtitle in the article rather than inside the image.
 
-## Current prompt: measured performance cover
+## V6 correction instructions
+
+Keep the title, colours, and three-worktree comparison. Remove the repeated “6 min 36 s” and “10.5 GB” labels beneath individual worktrees. Show one total for each workflow:
+
+- Ordinary: “Three worktrees total: 6 min 36 s · 10.5 GB”.
+- Faster Rust Work Trees: “Three worktrees total: 16.3 s · 254 MB”.
+
+Replace every “REUSE BUILD (Instant)” with “REUSE EXISTING BUILD”. Keep “24× faster · 97.6% less added allocation”. Add a readable footnote: “Estimated from late-sh release-build measurements on macOS · unchanged sources · main checkout already built”.
+
+## Earlier prompt: measured performance cover
 
 Use this prompt for image-main-v3.png. Lead with measured performance and allocated-space savings through typography, rather than illustrative diagrams or objects. Generated with the built-in image generation tool.
 
