@@ -6,7 +6,7 @@ pnpm workspace packages
 
 ## Key Exports & Entry Points
 
-- worktree_tools/: reusable tool.
+- faster_rust_worktrees/: reusable tool.
 
 ## Rules
 

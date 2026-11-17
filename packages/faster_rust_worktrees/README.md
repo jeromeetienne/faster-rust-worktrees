@@ -1,4 +1,4 @@
-# worktree_tools
+# faster_rust_worktrees
 
 The reusable command-line tool behind Faster Rust Work Trees. The intended user workflow is through the [faster_rust_worktrees skill](../../skills/faster_rust_worktrees/SKILL.md), as explained in the [root README](../../README.md). This README documents direct tool use and development.
 
@@ -103,7 +103,7 @@ pnpm test
 Tests create disposable Git and Rust projects and remove the fixtures afterward. No server is started.
 
 ```text
-packages/worktree_tools/       shared tool and real Cargo tests
+packages/faster_rust_worktrees/       shared tool and real Cargo tests
 skills/faster_rust_worktrees/  canonical skill and configuration reference
 docs/                         measurements, raw evidence, and reproduction methods
 ```

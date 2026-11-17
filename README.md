@@ -108,6 +108,6 @@ The coding agent follows the skill’s [configuration and limits](skills/faster_
 
 ## Direct tool use and development
 
-For manual installation, configuration, worktree creation, cleanup, implementation details, and development commands, read the [worktree_tools package README](packages/worktree_tools/README.md).
+For manual installation, configuration, worktree creation, cleanup, implementation details, and development commands, read the [faster_rust_worktrees package README](packages/faster_rust_worktrees/README.md).
 
 [MIT license](LICENSE) · [Source attribution](NOTICE.md)

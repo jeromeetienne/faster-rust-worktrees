@@ -17,7 +17,7 @@ Faster Rust Work Trees is a pnpm monorepo containing a reusable Rust worktree op
 - Receiving repositories configure the tool instead of copying its implementation.
 - Folder responsibilities follow [Repo Folders Constraints](.agents/rules_of_the_repo/config/repo_folders_constraints/config.md).
 - Repository settings stay outside reusable skill folders.
-- The root README explains skill-based use; direct tool use and development are documented in the worktree_tools package README.
+- The root README explains skill-based use; direct tool use and development are documented in the faster_rust_worktrees package README.
 
 ## Background
 
