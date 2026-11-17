@@ -1,5 +1,5 @@
 {
-  "name": "worktree_tools",
+  "name": "faster_rust_worktrees",
   "version": "0.1.0",
   "private": true,
   "type": "module",

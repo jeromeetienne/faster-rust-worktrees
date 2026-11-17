@@ -1,13 +1,12 @@
-# Directory Context: `/packages/worktree_tools/src`
+# Directory Context: `/packages/faster_rust_worktrees/tests`
 
 ## Purpose
 
-Configuration, worktree reuse, and conservative cleanup.
+Repeatable isolated Git and Cargo verification.
 
 ## Key Exports & Entry Points
 
-- index.ts: public package interface.
-- Command: `pnpm dev --help`.
+- Command: `pnpm test`.
 
 ## Rules
 

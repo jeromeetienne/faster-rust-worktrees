@@ -1,4 +1,4 @@
-# Directory Context: `/packages/worktree_tools`
+# Directory Context: `/packages/faster_rust_worktrees`
 
 ## Purpose
 
