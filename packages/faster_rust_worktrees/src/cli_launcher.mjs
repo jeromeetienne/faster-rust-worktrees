@@ -8,7 +8,7 @@ import { tsImport } from 'tsx/esm/api';
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * The root package.json registers this file as the installed faster-rust-worktrees command. The first line asks
+ * The root package.json registers this file as the installed faster_rust_worktrees command. The first line asks
  * the operating system to run this JavaScript module with Node.js, which then imports tsx from the package's
  * own dependencies. Running `tsx cli.ts` works inside a package script, such as `pnpm dev`, because the package
  * manager adds locally installed commands to the command search path for that script. An installed command

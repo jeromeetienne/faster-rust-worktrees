@@ -19,7 +19,7 @@ The earlier ripgrep and fd results use debug builds. The method is comparable wi
 - [late-sh measured source](https://github.com/mpiorowski/late-sh/commit/fba35bc78dd906523897927e236fd0adb869e911).
 - [fd measured source](https://github.com/sharkdp/fd/commit/6cf330283cfdcd1b8a6100beec7375bbb58975a3).
 - [ripgrep measured source](https://github.com/BurntSushi/ripgrep/commit/178cc027e283fd965cb72d0a7395b219eada170c).
-- [Faster Rust Work Trees measured source](https://github.com/jeromeetienne/faster-rust-worktrees/commit/11ebe3b59b5a746979ecee2972eed07554d8ae95); tool implementation unchanged throughout.
+- [Faster Rust Work Trees measured source](https://github.com/jeromeetienne/faster_rust_worktrees/commit/11ebe3b59b5a746979ecee2972eed07554d8ae95); tool implementation unchanged throughout.
 - macOS 26.2, arm64, rustc 1.96.1, Cargo 1.96.1, Node.js 24.14.0.
 - Shared tool invoked directly through `node <tool-checkout>/packages/worktree_tools/src/run.mjs`.
 - `CARGO_TARGET_DIR` unset; output is checkout-local `target/`.

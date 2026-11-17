@@ -78,15 +78,15 @@ git worktree add -b <branch> .agents/worktree/<branch> origin/main
 ```
 
 - Launch command: `pnpm install --frozen-lockfile && pnpm dev --help`, run from the temporary worktree. Run `pnpm test` for the real Cargo integration scenario.
-- Issue tracker commands: use the commands below for `jeromeetienne/faster-rust-worktrees`, replacing angle-bracket values. Write multiline descriptions and comments to files and use `--body-file`.
+- Issue tracker commands: use the commands below for `jeromeetienne/faster_rust_worktrees`, replacing angle-bracket values. Write multiline descriptions and comments to files and use `--body-file`.
 
 ```bash
-gh issue view <number> --repo jeromeetienne/faster-rust-worktrees --comments
-gh issue comment <number> --repo jeromeetienne/faster-rust-worktrees --body-file <body-file>
-gh issue create --repo jeromeetienne/faster-rust-worktrees --title <title> --body-file <body-file>
-gh pr create --repo jeromeetienne/faster-rust-worktrees --base main --head <branch> --title <title> --body-file <body-file>
-gh pr merge <number> --repo jeromeetienne/faster-rust-worktrees --merge
-gh issue close <number> --repo jeromeetienne/faster-rust-worktrees
+gh issue view <number> --repo jeromeetienne/faster_rust_worktrees --comments
+gh issue comment <number> --repo jeromeetienne/faster_rust_worktrees --body-file <body-file>
+gh issue create --repo jeromeetienne/faster_rust_worktrees --title <title> --body-file <body-file>
+gh pr create --repo jeromeetienne/faster_rust_worktrees --base main --head <branch> --title <title> --body-file <body-file>
+gh pr merge <number> --repo jeromeetienne/faster_rust_worktrees --merge
+gh issue close <number> --repo jeromeetienne/faster_rust_worktrees
 ```
 
 - Chat rename: not available.
