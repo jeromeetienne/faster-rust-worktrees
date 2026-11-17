@@ -28,16 +28,16 @@ Read [ARTICLE.md](ARTICLE.md) for the complete article draft. Read [PLAN.md](PLA
 
 ## Main image
 
-![Performance cover showing 24 times faster worktree creation and first builds, from 22 minutes to 54 seconds, and 97.6 percent less added disk allocation, from 34.98 GB to 846 MB, for ten unchanged late-sh release worktrees on macOS with the main checkout already built.](image-main-v3.png)
+![Three-worktree comparison fitted to dev.to cover proportions, preserving the full original image.](image-main-v5.png)
 
-The image was generated with the built-in image generation tool using [IMAGE_PROMPT.md](IMAGE_PROMPT.md).
+V5 resizes the user-provided V4 image to fit a 2400 × 1008 canvas, adding side padding to preserve all content. Embedded metadata has been removed. Earlier generated versions and their prompts remain available in [IMAGE_PROMPT.md](IMAGE_PROMPT.md).
 
 ### Removing image metadata
 
 To export a copy without metadata, run this command from this article folder:
 
 ```bash
-npx --yes --package sharp-cli sharp -i image-main-v3.png -o image-main-v3-without-metadata.png
+npx --yes --package sharp-cli sharp -i image-main-v5.png -o image-main-v5-without-metadata.png
 ```
 
 [Sharp strips metadata by default](https://sharp.pixelplumbing.com/api-output/). This removes metadata such as Content Credentials, but does not guarantee removal of an invisible SynthID watermark embedded in the image. [OpenAI explains the difference between these provenance signals](https://help.openai.com/en/articles/8912793-provenance-signals-in-content-processed-by-openai-tools).

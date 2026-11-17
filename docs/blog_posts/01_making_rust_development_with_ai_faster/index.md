@@ -14,6 +14,7 @@ This file lists the structure and writing plan for the article.
 - [IMAGE_PROMPT.md](IMAGE_PROMPT.md): The reproducible prompt for the main article image and social media card.
 - [image-main-v1.png](image-main-v1.png): The earlier comparison diagram, retained for reference.
 - [image-main-v2.png](image-main-v2.png): The revised cinematic article cover with illuminated independent workspaces and the measured speed comparison.
-- [image-main-v3.png](image-main-v3.png): The current typography-led cover, showing measured creation-plus-first-build speed and allocated-space savings.
+- [image-main-v3.png](image-main-v3.png): The earlier typography-led cover, showing measured creation-plus-first-build speed and allocated-space savings.
 - [ARTICLE.md](ARTICLE.md): The complete technical article draft for review before publication on dev.to.
 - [image-main-v4.png](image-main-v4.png): The user-provided comparison image for three ordinary and optimized Rust worktrees.
+- [image-main-v5.png](image-main-v5.png): The complete V4 image fitted to dev.to cover proportions with side padding and metadata removed.
