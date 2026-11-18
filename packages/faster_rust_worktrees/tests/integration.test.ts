@@ -22,6 +22,80 @@ class IntegrationTest {
 	 * @returns Nothing.
 	 */
 	static register(): void {
+		Test('Cargo reuse after moving sibling dependencies into a shared workspace', () => {
+			const directory = Fs.mkdtempSync(Path.join(Os.tmpdir(), 'faster-rust-workspace-'));
+			const root = Fs.realpathSync(directory);
+			const build = ['cargo', 'build', '--frozen'];
+			const configuration = configurationSchema.parse({
+				cargoCommands: [{
+					cwd: 'app',
+					argv: build,
+				}],
+			});
+			const commit = ['git', '-c', 'user.name=Fixture', '-c',
+				'user.email=fixture@example.invalid', 'commit', '-qm'];
+			const workspace = Path.join(root, 'Cargo.toml');
+			try {
+				IntegrationTest._fixture(root);
+				const workspaceManifest = Fs.readFileSync(workspace);
+				Fs.unlinkSync(workspace);
+				const libraryManifest = Path.join(root, 'shared/Cargo.toml');
+				const libraryPackage = Fs.readFileSync(libraryManifest);
+				Fs.appendFileSync(libraryManifest, '\n[workspace]\nresolver="2"\n');
+				Fs.mkdirSync(Path.join(root, '.cargo'));
+				Fs.writeFileSync(Path.join(root, '.cargo/config.toml'), '[build]\ntarget-dir = "target"\n');
+				IntegrationTest._run(root, ['git', 'init', '-q']);
+				const app = Path.join(root, 'app');
+				IntegrationTest._run(app, ['cargo', 'build', '--offline']);
+				Assert.doesNotMatch(IntegrationTest._run(app, build), /Compiling /);
+				IntegrationTest._run(root, ['git', 'add', '.']);
+				IntegrationTest._run(root, [...commit, 'Separate workspaces']);
+				const separate = WorktreeCreate.run(root, 'separate', configuration);
+				Assert.match(separate.decisions[0], /copy-on-write cloned/);
+				Assert.equal(separate.warnings.length, 1);
+				Assert.match(separate.warnings[0], /shared \(shared\/Cargo.toml\) is outside Cargo workspace app/);
+				const rebuilt = IntegrationTest._run(Path.join(separate.worktreePath, 'app'), build);
+				console.log(`Separate workspaces:\n${rebuilt}`);
+				Assert.match(rebuilt, /Compiling shared /);
+				Assert.match(rebuilt, /Compiling app /);
+
+				Fs.writeFileSync(workspace, workspaceManifest);
+				Fs.writeFileSync(libraryManifest, libraryPackage);
+				const lockfile = Fs.readFileSync(Path.join(app, 'Cargo.lock'));
+				Fs.renameSync(Path.join(app, 'Cargo.lock'), Path.join(root, 'Cargo.lock'));
+				IntegrationTest._run(app, build);
+				Assert.deepEqual(Fs.readFileSync(Path.join(root, 'Cargo.lock')), lockfile);
+				IntegrationTest._run(root, ['git', 'add', '.']);
+				IntegrationTest._run(root, [...commit, 'Shared workspace']);
+
+				const first = WorktreeCreate.run(root, 'shared-first', configuration);
+				const second = WorktreeCreate.run(root, 'shared-second', configuration);
+				for (const worktree of [first, second]) {
+					Assert.match(worktree.decisions[0], /copy-on-write cloned/);
+					Assert.deepEqual(worktree.warnings, []);
+					const unchanged = IntegrationTest._run(Path.join(worktree.worktreePath, 'app'), build);
+					console.log(`Shared workspace:\n${unchanged}`);
+					Assert.doesNotMatch(unchanged, /Compiling /);
+				}
+				Fs.writeFileSync(Path.join(first.worktreePath, 'shared/src/lib.rs'),
+					'/// Returns the changed fixture value.\npub fn value() -> u32 {\n    43\n}\n');
+				const changed = IntegrationTest._run(Path.join(first.worktreePath, 'app'), build);
+				console.log(`Changed sibling dependency:\n${changed}`);
+				Assert.match(changed, /Compiling shared /);
+				Assert.match(changed, /Compiling app /);
+				Assert.equal(IntegrationTest._run(first.worktreePath, ['target/debug/app']).trim(), '43');
+				Assert.doesNotMatch(IntegrationTest._run(app, build), /Compiling /);
+				Assert.doesNotMatch(IntegrationTest._run(Path.join(second.worktreePath, 'app'), build), /Compiling /);
+				Assert.equal(IntegrationTest._run(root, ['target/debug/app']).trim(), '42');
+				Assert.equal(IntegrationTest._run(second.worktreePath, ['target/debug/app']).trim(), '42');
+			} finally {
+				Fs.rmSync(directory, {
+					recursive: true,
+					force: true,
+				});
+			}
+		});
+
 		Test('independent Cargo reuse, changed behavior, concurrency, ordinary creation, and cleanup', async () => {
 			const directory = Fs.mkdtempSync(Path.join(Os.tmpdir(), 'faster-rust-integration-'));
 			const root = Path.join(Fs.realpathSync(directory), 'main');

@@ -6,7 +6,7 @@ Worktree creation and conservative build-output cleanup.
 
 ## Key Exports & Entry Points
 
-- `worktree_create.ts`: worktree creation with reusable Cargo output.
+- `worktree_create.ts`: worktree creation with reusable Cargo output and Cargo workspace warnings.
 - `target_cleanup.ts`: preview-first cleanup.
 
 ## Rules
