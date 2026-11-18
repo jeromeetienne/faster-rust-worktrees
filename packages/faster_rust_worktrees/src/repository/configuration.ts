@@ -1,5 +1,6 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
+import * as Yaml from 'yaml';
 import { z } from 'zod';
 import { WorktreeGit } from './worktree_git.js';
 
@@ -29,27 +30,23 @@ export type RepositoryConfiguration = z.infer<typeof configurationSchema>;
 
 /** Loads configuration and enforces paths that stay inside each checkout. */
 export class Configuration {
+	/** Default configuration filename in the main checkout. */
+	static readonly DEFAULT_FILENAME = '.faster_rust_worktrees.yaml';
+
 	/**
 	 * Reads a receiving repository's configuration.
 	 * @param root Checkout root.
 	 * @param file Relative configuration filename.
 	 * @returns Validated repository settings.
 	 */
-	static read(root: string, file = '.faster_rust_worktrees.json'): RepositoryConfiguration {
+	static read(root: string, file = Configuration.DEFAULT_FILENAME): RepositoryConfiguration {
 		if (process.env.CARGO_TARGET_DIR !== undefined) {
 			throw new Error('Unset CARGO_TARGET_DIR; configure checkout-local targetDirectories instead.');
 		}
-		const configuration = configurationSchema.parse(JSON.parse(Fs.readFileSync(Path.resolve(root, file), 'utf8')));
-		Configuration.path(root, configuration.worktreeDirectory);
-		for (const directory of configuration.targetDirectories) {
-			Configuration.path(root, directory);
-			if (configuration.worktreeDirectory === directory
-				|| configuration.worktreeDirectory.startsWith(`${directory}/`)
-				|| directory.startsWith(`${configuration.worktreeDirectory}/`)) {
-				throw new Error('Build output and worktree directories must not overlap.');
-			}
-		}
-		return configuration;
+		const content = Configuration._readContent(root, file);
+		const extension = Path.extname(file).toLowerCase();
+		const isYaml = extension === '.yaml' || extension === '.yml';
+		return Configuration._validate(root, isYaml ? Yaml.parse(content) : JSON.parse(content));
 	}
 
 	/**
@@ -95,5 +92,65 @@ export class Configuration {
 			}
 		}
 		return target;
+	}
+
+	/**
+	 * Reads configuration and migrates the previous default when needed.
+	 * @param root Main checkout root.
+	 * @param file Requested configuration filename.
+	 * @returns Configuration file contents.
+	 */
+	private static _readContent(root: string, file: string): string {
+		const destination = Path.resolve(root, file);
+		try {
+			return Fs.readFileSync(destination, 'utf8');
+		} catch (error) {
+			if (file !== Configuration.DEFAULT_FILENAME || (error as NodeJS.ErrnoException).code !== 'ENOENT') {
+				throw error;
+			}
+		}
+
+		const legacy = Path.join(root, '.faster_rust_worktrees.json');
+		const configuration = Configuration._validate(root, JSON.parse(Fs.readFileSync(legacy, 'utf8')));
+		const temporaryDirectory = Fs.mkdtempSync(Path.join(root, '.faster_rust_worktrees-'));
+		try {
+			const temporaryFile = Path.join(temporaryDirectory, file);
+			Fs.writeFileSync(temporaryFile, Yaml.stringify(configuration), {
+				mode: 0o600,
+			});
+			try {
+				Fs.linkSync(temporaryFile, destination);
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+					throw error;
+				}
+			}
+		} finally {
+			Fs.rmSync(temporaryDirectory, {
+				recursive: true,
+				force: true,
+			});
+		}
+		return Fs.readFileSync(destination, 'utf8');
+	}
+
+	/**
+	 * Validates settings and ensures that managed paths stay inside the checkout.
+	 * @param root Main checkout root.
+	 * @param value Parsed configuration.
+	 * @returns Validated repository settings.
+	 */
+	private static _validate(root: string, value: unknown): RepositoryConfiguration {
+		const configuration = configurationSchema.parse(value);
+		Configuration.path(root, configuration.worktreeDirectory);
+		for (const directory of configuration.targetDirectories) {
+			Configuration.path(root, directory);
+			if (configuration.worktreeDirectory === directory
+				|| configuration.worktreeDirectory.startsWith(`${directory}/`)
+				|| directory.startsWith(`${configuration.worktreeDirectory}/`)) {
+				throw new Error('Build output and worktree directories must not overlap.');
+			}
+		}
+		return configuration;
 	}
 }
