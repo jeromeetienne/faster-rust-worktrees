@@ -38,7 +38,7 @@ class IntegrationTest {
 						argv: ['cargo', 'test', '--offline', '--no-run'],
 					}],
 				});
-				Fs.writeFileSync(Path.join(root, 'faster_rust_worktrees.json'), JSON.stringify(configuration));
+				Fs.writeFileSync(Path.join(root, '.faster_rust_worktrees.json'), JSON.stringify(configuration));
 				IntegrationTest._run(root, ['cargo', 'build', '--offline']);
 				IntegrationTest._run(root, ['cargo', 'test', '--offline', '--no-run']);
 				IntegrationTest._run(root, ['git', 'add', '.']);
