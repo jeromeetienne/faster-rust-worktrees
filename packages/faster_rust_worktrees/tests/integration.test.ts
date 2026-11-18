@@ -169,6 +169,14 @@ class IntegrationTest {
 				const plan = TargetCleanup.obsolete(root, configuration);
 				Assert.ok(plan.some((entry) => entry.path === old));
 				Assert.equal(Fs.existsSync(old), true);
+				const linked = Path.join(root, 'target/debug/deps/linked');
+				Fs.symlinkSync(unknown, linked);
+				Assert.throws(() => TargetCleanup.remove([...plan, {
+					checkout: root,
+					target: 'target',
+					path: linked,
+				}]), /Symbolic link/);
+				Assert.equal(Fs.existsSync(old), true);
 				TargetCleanup.remove(plan);
 				Assert.equal(Fs.existsSync(old), false);
 				Assert.equal(Fs.existsSync(unknown), true);

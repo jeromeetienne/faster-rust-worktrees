@@ -85,13 +85,40 @@ export class Configuration {
 	 */
 	static target(root: string, relative: string): string {
 		const target = Configuration.path(root, relative);
-		for (const file of WorktreeGit.listTrackedFiles(root)) {
-			const absolute = Path.resolve(root, file);
-			if (absolute === target || absolute.startsWith(`${target}${Path.sep}`)) {
-				throw new Error(`Refusing to manage tracked sources: ${target}`);
+		Configuration._validateTargets(root, [target]);
+		return target;
+	}
+
+	/**
+	 * Resolves target folders using one tracked-file listing for the checkout.
+	 * @param root Checkout root.
+	 * @param relatives Distinct configured output directories.
+	 * @returns Validated absolute paths keyed by configured output directory.
+	 */
+	static targets(root: string, relatives: ReadonlySet<string>): Map<string, string> {
+		const targets = new Map<string, string>();
+		for (const relative of relatives) {
+			targets.set(relative, Configuration.path(root, relative));
+		}
+		Configuration._validateTargets(root, targets.values());
+		return targets;
+	}
+
+	/**
+	 * Rejects any target that contains tracked files.
+	 * @param root Checkout root.
+	 * @param targets Resolved target paths.
+	 * @returns Nothing.
+	 */
+	private static _validateTargets(root: string, targets: Iterable<string>): void {
+		const trackedPaths = WorktreeGit.listTrackedFiles(root).map((file) => Path.resolve(root, file));
+		for (const target of targets) {
+			for (const trackedPath of trackedPaths) {
+				if (trackedPath === target || trackedPath.startsWith(`${target}${Path.sep}`)) {
+					throw new Error(`Refusing to manage tracked sources: ${target}`);
+				}
 			}
 		}
-		return target;
 	}
 
 	/**
