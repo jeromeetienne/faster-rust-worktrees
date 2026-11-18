@@ -7,7 +7,7 @@ The reusable command-line tool behind Faster Rust Work Trees. The intended user 
 Run the shared tool directly from GitHub:
 
 ```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees --help
+npx --yes github:jeromeetienne/faster_rust_worktrees --help
 ```
 
 No npm publication is needed. For repeatable automation, pin an available Git reference by appending `#<reference>` to the GitHub package name.
@@ -16,7 +16,7 @@ No npm publication is needed. For repeatable automation, pin an available Git re
 
 Start from the [configuration example](../../skills/faster_rust_worktrees/references/setup.md#configuration). Set the base reference, worktree location, build folders, and Cargo commands with their actual working directories. An optional installation command supports repositories with additional dependencies.
 
-Create `faster-rust-worktrees.json` in the receiving repository’s main checkout. For a repository that builds and tests from its root:
+Create `.faster_rust_worktrees.json` in the receiving repository’s main checkout. If you already have a configuration file, rename the file to `.faster_rust_worktrees.json` or pass its path with `--config`. For a repository that builds and tests from its root:
 
 ```json
 {
@@ -39,7 +39,7 @@ Ignore the nested worktree folder in Git, commit the configuration, and build th
 From your Rust repository:
 
 ```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees create fix-example
+npx --yes github:jeromeetienne/faster_rust_worktrees create fix-example
 ```
 
 Run your usual build and test commands inside the new worktree. Check the reported clone decisions. Missing build output or unavailable cloning is reported explicitly.
@@ -47,7 +47,7 @@ Run your usual build and test commands inside the new worktree. Check the report
 For an ordinary worktree without build reuse:
 
 ```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees create ordinary-example --without-optimization
+npx --yes github:jeromeetienne/faster_rust_worktrees create ordinary-example --without-optimization
 ```
 
 ## What makes reuse work
@@ -64,13 +64,13 @@ The technique comes from [Heidrun Code](https://github.com/heidrun-org/heidrun_c
 Preview old worktree build folders:
 
 ```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees clean --days 14
+npx --yes github:jeromeetienne/faster_rust_worktrees clean --days 14
 ```
 
 Preview obsolete Cargo output using the configured build commands:
 
 ```bash
-npx --yes github:jeromeetienne/faster-rust-worktrees prune
+npx --yes github:jeromeetienne/faster_rust_worktrees prune
 ```
 
 Both commands preview paths by default. Add `--apply` to remove the selected output, with builds stopped. Unknown output is retained; failed commands or unrecognized Cargo logs prevent pruning.

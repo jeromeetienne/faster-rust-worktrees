@@ -19,4 +19,4 @@ Direct tool use and development are documented in [README.md](README.md); the [r
 
 ## Background
 
-- https://github.com/jeromeetienne/faster-rust-worktrees/issues/3
+- https://github.com/jeromeetienne/faster_rust_worktrees/issues/3

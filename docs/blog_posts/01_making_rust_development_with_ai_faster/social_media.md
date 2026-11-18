@@ -5,7 +5,7 @@
 - Status: Six proposed posts and sharing advice for review
 - Related framing: [Article overview](README.md), [Article draft](ARTICLE.md)
 - Related rules: [Docs folder system](../../../.agents/skills/docs_folder_system/SKILL.md), [Folder constraints](../../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
-- Related issue: [Article planning](https://github.com/jeromeetienne/faster-rust-worktrees/issues/11)
+- Related issue: [Article planning](https://github.com/jeromeetienne/faster_rust_worktrees/issues/11)
 
 ## How to use these posts
 

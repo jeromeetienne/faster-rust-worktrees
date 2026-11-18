@@ -15,4 +15,4 @@ Repeatable isolated Git and Cargo verification.
 
 ## Background
 
-- https://github.com/jeromeetienne/faster-rust-worktrees/issues/3
+- https://github.com/jeromeetienne/faster_rust_worktrees/issues/3

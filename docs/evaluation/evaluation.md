@@ -5,7 +5,7 @@
 - Status: Measured local evidence; skill remains Draft
 - Related framing: [Repository instructions](../../AGENTS.md)
 - Related rules: [Folder constraints](../../.agents/rules_of_the_repo/config/repo_folders_constraints/config.md)
-- Related issue: [Issue 3](https://github.com/jeromeetienne/faster-rust-worktrees/issues/3)
+- Related issue: [Issue 3](https://github.com/jeromeetienne/faster_rust_worktrees/issues/3)
 
 ## Scope and environment
 

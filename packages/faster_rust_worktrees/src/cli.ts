@@ -20,8 +20,8 @@ export class Cli {
 	 */
 	static run(argv: string[]): void {
 		const command = new Command();
-		command.name('faster-rust-worktrees').description('Reuse independent Cargo output in Git worktrees')
-			.option('--config <path>', 'configuration relative to the main checkout', 'faster-rust-worktrees.json');
+		command.name('faster_rust_worktrees').description('Reuse independent Cargo output in Git worktrees')
+			.option('--config <path>', 'configuration relative to the main checkout', '.faster_rust_worktrees.json');
 		command.command('create <branch>').option('--base <reference>', 'base reference override')
 			.option('--without-optimization', 'create an ordinary worktree')
 			.action((branch: string, options: { base?: string; withoutOptimization?: boolean }) => {
