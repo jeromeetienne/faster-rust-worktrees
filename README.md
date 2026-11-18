@@ -2,7 +2,7 @@
 
 **Build once. Let your coding agent start the next worktree faster.**
 
-A new Rust worktree usually starts with an empty build folder. Faster Rust Work Trees reuses the build you already have, giving each worktree independent Cargo output while sharing unchanged disk blocks.
+A new Rust worktree usually starts with an empty build folder. Faster Rust Work Trees reuses the build you already have, giving each worktree independent Cargo output while sharing unchanged disk blocks. Projects with local dependencies outside their Cargo workspace can [enable reuse with a shared Cargo workspace](packages/faster_rust_worktrees/README.md#reuse-builds-with-local-dependencies).
 
 **Ten built late-sh release worktrees: 34.98 GB of added space becomes 846 MB.**
 

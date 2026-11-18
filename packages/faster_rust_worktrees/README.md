@@ -60,6 +60,21 @@ npx --yes github:jeromeetienne/faster_rust_worktrees create ordinary-example --w
 
 The technique comes from [Heidrun Code](https://github.com/heidrun-org/heidrun_code/tree/main/packages/dev_tools/worktree_tools). Faster Rust Work Trees extracts the reusable mechanism into a pnpm monorepo with a shared TypeScript tool, a portable skill, and real Git and Cargo tests.
 
+## Reuse builds with local dependencies
+
+A `copy-on-write cloned` decision confirms that the new worktree has a copy of the build files. Cargo decides separately whether to reuse those files. For a local dependency outside the Cargo workspace root, Cargo includes the absolute path in the identity it uses for compiled output. The path changes in a fresh worktree, so Cargo can rebuild the dependency and packages that use it.
+
+After a successful clone, `create` reports these dependencies by package name and manifest path in `warnings`. The check uses offline, locked Cargo metadata for direct `cargo` entries in `cargoCommands`. Configure the underlying Cargo commands with their working directories if a package manager or script normally invokes Cargo. Metadata can fail if required dependencies are missing from the local Cargo cache. Verify reuse with the actual first build in every case.
+
+To enable reuse for sibling packages in the same Git repository:
+
+1. Add a shared `[workspace]` manifest in a directory above the application and all affected local dependencies. List the packages as workspace members, remove their nested workspace declarations, and update any explicit `package.workspace` paths. Review workspace settings such as the dependency resolver, profiles, and patches before consolidating them.
+2. Review the lockfile changes. Use the existing application lockfile as the starting point for the shared workspace lockfile. Check a build with `--locked`. If Cargo requires changes, review the resolved dependency differences before committing the shared lockfile and removing the superseded lockfiles.
+3. Keep the output inside each checkout. Update the commands and target paths in the Faster Rust Work Trees configuration if the workspace move changes them. Commit the setup, build the main checkout with the usual commands, and create a worktree at the same revision.
+4. Run the same build in the new worktree and confirm that Cargo prints no `Compiling` lines. In a disposable worktree, edit a local dependency and check that the affected packages rebuild and only that worktree's executable behavior changes.
+
+See [the Heidrun Data reproduction and measurements](https://github.com/jeromeetienne/faster_rust_worktrees/issues/21).
+
 ## Keep build output under control
 
 Preview old worktree build folders:

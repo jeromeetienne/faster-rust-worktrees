@@ -1,5 +1,6 @@
 import Fs from 'node:fs';
 import Path from 'node:path';
+import { z } from 'zod';
 import { Configuration } from '../repository/configuration.js';
 import type { RepositoryConfiguration } from '../repository/configuration.js';
 import { DirectoryClone } from '../cargo_reuse/directory_clone.js';
@@ -14,6 +15,16 @@ import { ProcessCommand } from '../repository/process_command.js';
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+/** Cargo fields needed to identify local packages outside the workspace root. */
+const cargoMetadataSchema = z.object({
+	workspace_root: z.string(),
+	packages: z.array(z.object({
+		name: z.string(),
+		manifest_path: z.string(),
+		source: z.string().nullable(),
+	})),
+});
+
 /** Configurable extraction of Heidrun Code's worktree creation mechanism. */
 export class WorktreeCreate {
 	/**
@@ -23,7 +34,7 @@ export class WorktreeCreate {
 	 * @param configuration Receiving-repository settings.
 	 * @param isWithoutOptimization Whether to create an ordinary worktree.
 	 * @param baseRef Optional base reference override.
-	 * @returns Worktree path, clone decisions, and relocated record count.
+	 * @returns Worktree path, clone decisions, Cargo reuse warnings, and relocated record count.
 	 */
 	static run(root: string, name: string, configuration: RepositoryConfiguration,
 		isWithoutOptimization = false, baseRef = configuration.baseRef) {
@@ -82,10 +93,66 @@ export class WorktreeCreate {
 				throw new Error(`Worktree retained at ${worktreePath}; installation failed: ${String(error)}`);
 			}
 		}
+		const warnings = clonedCount > 0 ? WorktreeCreate._cargoWarnings(worktreePath, configuration) : [];
 		return {
 			worktreePath,
 			decisions,
 			rewrittenRecords,
+			warnings,
 		};
+	}
+
+	/**
+	 * Checks the configured Cargo projects without fetching dependencies or changing lockfiles.
+	 * @param worktreePath New worktree checkout.
+	 * @param configuration Receiving-repository settings.
+	 * @returns Cargo reuse warnings, separate from the file clone decisions.
+	 */
+	private static _cargoWarnings(worktreePath: string, configuration: RepositoryConfiguration): string[] {
+		const warnings = new Set<string>();
+		const inspected = new Set<string>();
+		for (const { cwd, argv } of configuration.cargoCommands) {
+			if (Path.basename(argv[0]) !== 'cargo') {
+				continue;
+			}
+			const command = [argv[0], 'metadata', '--format-version', '1', '--frozen', '--quiet'];
+			for (const [index, argument] of argv.entries()) {
+				if (argument === '--manifest-path' || argument === '--features' || argument === '-F'
+					|| argument === '--config') {
+					const value = argv[index + 1];
+					if (value !== undefined) {
+						command.push(argument, value);
+					}
+				} else if (argument === '--all-features' || argument === '--no-default-features'
+					|| /^--(manifest-path|features|config)=/.test(argument) || /^-F.+/.test(argument)) {
+					command.push(argument);
+				}
+			}
+			if (argv[1]?.startsWith('+') === true) {
+				command.splice(1, 0, argv[1]);
+			}
+			const key = JSON.stringify([cwd, command]);
+			if (inspected.has(key) === true) {
+				continue;
+			}
+			inspected.add(key);
+			try {
+				const output = ProcessCommand.run(worktreePath, cwd, command);
+				const metadata = cargoMetadataSchema.parse(JSON.parse(output));
+				for (const localPackage of metadata.packages) {
+					const relative = Path.relative(metadata.workspace_root, localPackage.manifest_path);
+					if (localPackage.source === null && (relative.startsWith(`..${Path.sep}`) || Path.isAbsolute(relative))) {
+						const manifest = Path.relative(worktreePath, localPackage.manifest_path);
+						const workspace = Path.relative(worktreePath, metadata.workspace_root) || '.';
+						warnings.add(`${localPackage.name} (${manifest}) is outside Cargo workspace ${workspace}. `
+							+ 'Cargo can rebuild cloned output. Use a shared Cargo workspace for build reuse.');
+					}
+				}
+			} catch {
+				warnings.add(`Could not inspect Cargo dependencies from ${cwd} using frozen Cargo metadata. `
+					+ 'Check the first build to confirm reuse.');
+			}
+		}
+		return [...warnings];
 	}
 }
