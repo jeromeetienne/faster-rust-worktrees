@@ -6,7 +6,7 @@ Repository configuration, Git operations, and command execution.
 
 ## Key Exports & Entry Points
 
-- `configuration.ts`: validated repository configuration.
+- `configuration.ts`: validated repository configuration and grouped target validation.
 - `process_command.ts`: configured command execution.
 - `worktree_git.ts`: Git worktree operations.
 

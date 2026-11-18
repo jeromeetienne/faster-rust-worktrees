@@ -96,16 +96,31 @@ export class TargetCleanup {
 	 * @returns Nothing.
 	 */
 	static remove(entries: CleanupEntry[]): void {
+		const entriesByCheckout = new Map<string, CleanupEntry[]>();
 		for (const entry of entries) {
-			const target = Configuration.target(entry.checkout, entry.target);
-			Configuration.path(entry.checkout, Path.relative(entry.checkout, entry.path));
-			if (entry.path !== target && entry.path.startsWith(`${target}${Path.sep}`) === false) {
-				throw new Error('Cleanup entry escaped its target folder.');
+			const checkoutEntries = entriesByCheckout.get(entry.checkout);
+			if (checkoutEntries === undefined) {
+				entriesByCheckout.set(entry.checkout, [entry]);
+			} else {
+				checkoutEntries.push(entry);
 			}
-			if (TargetCleanup._isCargoOutput(target) === false) {
-				throw new Error('Cargo output marker missing; nothing may be removed.');
+		}
+		for (const [checkout, checkoutEntries] of entriesByCheckout) {
+			const targets = Configuration.targets(checkout, new Set(checkoutEntries.map((entry) => entry.target)));
+			for (const target of targets.values()) {
+				if (TargetCleanup._isCargoOutput(target) === false) {
+					throw new Error('Cargo output marker missing; nothing may be removed.');
+				}
 			}
-			TargetCleanup._newest(entry.path);
+			for (const entry of checkoutEntries) {
+				const target = targets.get(entry.target);
+				const path = Configuration.path(checkout, Path.relative(checkout, entry.path));
+				if (path !== entry.path || target === undefined || (path !== target
+					&& path.startsWith(`${target}${Path.sep}`) === false)) {
+					throw new Error('Cleanup entry escaped its target folder.');
+				}
+				TargetCleanup._newest(entry.path);
+			}
 		}
 		for (const entry of entries) {
 			Fs.rmSync(entry.path, {
