@@ -35,7 +35,7 @@ export class Configuration {
 	 * @param file Relative configuration filename.
 	 * @returns Validated repository settings.
 	 */
-	static read(root: string, file = 'faster_rust_worktrees.json'): RepositoryConfiguration {
+	static read(root: string, file = '.faster_rust_worktrees.json'): RepositoryConfiguration {
 		if (process.env.CARGO_TARGET_DIR !== undefined) {
 			throw new Error('Unset CARGO_TARGET_DIR; configure checkout-local targetDirectories instead.');
 		}

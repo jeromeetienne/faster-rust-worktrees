@@ -16,7 +16,7 @@ No npm publication is needed. For repeatable automation, pin an available Git re
 
 Start from the [configuration example](../../skills/faster_rust_worktrees/references/setup.md#configuration). Set the base reference, worktree location, build folders, and Cargo commands with their actual working directories. An optional installation command supports repositories with additional dependencies.
 
-Create `faster_rust_worktrees.json` in the receiving repository’s main checkout. If you already have a configuration file, rename the file to `faster_rust_worktrees.json` or pass its path with `--config`. For a repository that builds and tests from its root:
+Create `.faster_rust_worktrees.json` in the receiving repository’s main checkout. If you already have a configuration file, rename the file to `.faster_rust_worktrees.json` or pass its path with `--config`. For a repository that builds and tests from its root:
 
 ```json
 {
