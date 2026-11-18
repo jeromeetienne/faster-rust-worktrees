@@ -29,16 +29,29 @@ class IntegrationTest {
 				Fs.mkdirSync(root);
 				IntegrationTest._fixture(root);
 				IntegrationTest._run(root, ['git', 'init', '-q']);
-				const configuration = configurationSchema.parse({
-					cargoCommands: [{
-						cwd: 'app',
-						argv: ['cargo', 'build', '--offline'],
-					}, {
-						cwd: 'app',
-						argv: ['cargo', 'test', '--offline', '--no-run'],
-					}],
-				});
-				Fs.writeFileSync(Path.join(root, '.faster_rust_worktrees.json'), JSON.stringify(configuration));
+				Fs.writeFileSync(Path.join(root, '.faster_rust_worktrees.yaml'), [
+					'cargoCommands:',
+					'  - cwd: app',
+					'    argv: [cargo, build, --offline]',
+					'  - cwd: app',
+					'    argv: [cargo, test, --offline, --no-run]',
+					'',
+				].join('\n'));
+				const configuration = Configuration.read(root);
+				const yamlPath = Path.join(root, '.faster_rust_worktrees.yaml');
+				const yaml = Fs.readFileSync(yamlPath, 'utf8');
+				const legacyPath = Path.join(root, '.faster_rust_worktrees.json');
+				const legacy = JSON.stringify(configuration);
+				Fs.writeFileSync(legacyPath, legacy);
+				Fs.unlinkSync(yamlPath);
+				Assert.deepEqual(Configuration.read(root), configuration);
+				Assert.match(Fs.readFileSync(yamlPath, 'utf8'), /^baseRef: HEAD/m);
+				Assert.equal(Fs.readFileSync(legacyPath, 'utf8'), legacy);
+				Fs.writeFileSync(yamlPath, yaml);
+				Fs.writeFileSync(legacyPath, 'invalid JSON');
+				Assert.deepEqual(Configuration.read(root), configuration);
+				Assert.equal(Fs.readFileSync(yamlPath, 'utf8'), yaml);
+				Fs.unlinkSync(legacyPath);
 				IntegrationTest._run(root, ['cargo', 'build', '--offline']);
 				IntegrationTest._run(root, ['cargo', 'test', '--offline', '--no-run']);
 				IntegrationTest._run(root, ['git', 'add', '.']);

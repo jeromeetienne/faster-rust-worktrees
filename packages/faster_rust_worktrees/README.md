@@ -16,19 +16,20 @@ No npm publication is needed. For repeatable automation, pin an available Git re
 
 Start from the [configuration example](../../skills/faster_rust_worktrees/references/setup.md#configuration). Set the base reference, worktree location, build folders, and Cargo commands with their actual working directories. An optional installation command supports repositories with additional dependencies.
 
-Create `.faster_rust_worktrees.json` in the receiving repository’s main checkout. If you already have a configuration file, rename the file to `.faster_rust_worktrees.json` or pass its path with `--config`. For a repository that builds and tests from its root:
+Create `.faster_rust_worktrees.yaml` at the root of the main checkout. For a repository that builds and tests from its root:
 
-```json
-{
-  "baseRef": "HEAD",
-  "worktreeDirectory": ".agents/worktree",
-  "targetDirectories": ["target"],
-  "cargoCommands": [
-    { "cwd": ".", "argv": ["cargo", "build", "--locked"] },
-    { "cwd": ".", "argv": ["cargo", "test", "--locked", "--no-run"] }
-  ]
-}
+```yaml
+baseRef: HEAD
+worktreeDirectory: .agents/worktree
+targetDirectories: [target]
+cargoCommands:
+  - cwd: "."
+    argv: [cargo, build, --locked]
+  - cwd: "."
+    argv: [cargo, test, --locked, --no-run]
 ```
+
+If the default YAML file is missing, the first command that loads configuration converts an existing `.faster_rust_worktrees.json` to `.faster_rust_worktrees.yaml` and loads the new file. The original JSON file stays in place. An existing JSON configuration can also be selected with `--config .faster_rust_worktrees.json` before the subcommand.
 
 An optional `installCommand` uses the same `cwd` and `argv` fields as a Cargo command. Commands run without a shell. Multiple checkout-local target directories are supported. Place `--config <path>` before the subcommand to use another configuration file.
 
