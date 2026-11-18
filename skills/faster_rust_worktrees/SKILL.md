@@ -3,7 +3,7 @@ name: faster_rust_worktrees
 description: Configure and verify the shared Faster Rust Work Trees tool in a Rust repository to reuse independent Cargo build output through copy-on-write cloning. Discover build commands, preserve source-change detection, and evaluate adoption.
 ---
 
-# Faster Rust Work Trees
+# Faster Rust Work Trees 
 
 **Status: Draft.** Synthetic correctness and independent project measurements do not alone establish that these instructions can be adopted without help. Keep draft status until reviewed independent adoption evidence supports changing status.
 
